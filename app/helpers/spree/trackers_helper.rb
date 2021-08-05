@@ -40,7 +40,7 @@ module Spree
       Rails.cache.fetch(cache_key) do
         product = line_item.product
         {
-          id: variant.sku,
+          id: product.google_merchant_id,
           name: variant.name,
           category: product.category&.name,
           variant: variant.options_text,

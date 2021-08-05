@@ -1,0 +1,24 @@
+<% if ga_enabled? && @order.present? && !@order.complete? %>
+<script>
+window.addEventListener('turbolinks:load', function() {
+    if (typeof gtag !== 'undefined') {
+        clearGAplugins();
+        gtag('event', 'Cart Viewed', {
+            cart_id: '<%= @order.number %>',
+            products: [
+                <% @order.line_items.each_with_index do |line_item, index| %>
+                <%=
+                  product_for_segment(
+                    line_item.product,
+                    position: index+1,
+                    quantity: line_item.quantity,
+                    image: default_image_for_product_or_variant(line_item.variant)
+                  )
+                %>,
+                <% end %>
+            ]
+        });
+    }
+});
+</script>
+<% end %>
