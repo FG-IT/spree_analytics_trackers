@@ -1,19 +1,28 @@
 <% if ga_enabled? && @order.present? && !@order.completed? %>
-  <script>
-    window.addEventListener('turbolinks:load', function() {
-      if (typeof gtag !== 'undefined') {
+<script >
+window.addEventListener('turbolinks:load', function () {
+    if (typeof gtag !== 'undefined') {
         clearGAplugins();
-        gtag('event', 'checkout_progress', {
-          checkout_step: '<%= (@order.checkout_steps.index(@order.state) + 1) %>',
-          items: [
-            <% @order.line_items.each do |line_item| %>
-              <%= ga_line_item(line_item) %>,
-            <% end %>
-          ],
-          coupon: '<%= @order.promo_code %>',
-          checkout_option: '<%= @order.state %>'
+        <% if (@order.checkout_steps.index(@order.state) == 0) %>
+        <%fa_event = 'begin_checkout' %>
+        <% elsif (@order.checkout_steps.index(@order.state) == 1) %>
+        <%fa_event = 'add_shipping_info' %>
+        <% elsif (@order.checkout_steps.index(@order.state) == 2) %>
+        <%fa_event = 'add_payment_info' %>
+        <%end %>
+        gtag('event', '<%=fa_event %>', {
+            send_to: '<%= ga_tracker.analytics_id %>',
+            currency: '<%= @order.currency %>',
+            items: [
+                <% @order.line_items.each do |line_item| %>
+                <%= ga_line_item(line_item) %>,
+                <% end %>
+            ],
+            coupon: '<%= @order.promo_code %>',
+            checkout_option: '<%= @order.state %>'
         });
-      };
-    });
-  </script>
+    }
+    ;
+});
+</script>
 <% end %>

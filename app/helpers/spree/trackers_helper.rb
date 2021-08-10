@@ -26,6 +26,46 @@ module Spree
       end.merge(optional).to_json.html_safe
     end
 
+    def product_for_ga(product, variants = nil)
+      cache_key = [
+          'spree-ga-product',
+          I18n.locale,
+          current_currency,
+          product.cache_key_with_version
+      ].compact.join('/')
+
+      default_variant = default_variant(variants, product)
+
+      # product_hash = Rails.cache.fetch(cache_key) do
+      #   {
+      #       id: default_variant.id,
+      #       item_id: default_variant.id,
+      #       category: product.category&.name,
+      #       item_name: product.name,
+      #       brand: product.brand&.name,
+      #       price: product.price_in(current_currency).amount&.to_f,
+      #       quantity: 10,
+      #       currency: current_currency
+      #   }
+      # end
+
+      product_hash =
+          {
+              id: default_variant.id,
+              item_id: default_variant.id,
+              category: product.category&.name,
+              item_name: product.name,
+              brand: product.brand&.name,
+              price: product.price_in(current_currency).amount&.to_f,
+              quantity: 10,
+              currency: current_currency
+          }
+
+
+      product_hash.to_json.html_safe
+    end
+
+
     def ga_line_item(line_item)
       variant = line_item.variant
 
@@ -40,8 +80,9 @@ module Spree
       Rails.cache.fetch(cache_key) do
         product = line_item.product
         {
-            id: product.google_merchant_id ? product.google_merchant_id : variant.sku,
+            id: product.google_merchant_id ? product.google_merchant_id : variant.id,
             name: variant.name,
+            currency: current_currency,
             category: product.category&.name,
             variant: variant.options_text,
             brand: product.brand&.name,
