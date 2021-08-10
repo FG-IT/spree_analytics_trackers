@@ -16,7 +16,7 @@ if (typeof gtag !== 'undefined') {
 <script>
 gtag('event', '<%= fa_event %>', {
     'send_to': '<%= ga_tracker.analytics_id %>',
-    'currency': '<%=current_currency %>'
+    'currency': '<%=current_currency %>',
     <% if @order %>
     'items': [
         <% @order.line_items.each do |item| %>
