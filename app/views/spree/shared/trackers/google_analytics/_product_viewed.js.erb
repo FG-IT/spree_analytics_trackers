@@ -1,4 +1,5 @@
 <% if ga_enabled? && @product.present? %>
+<% variant = begin default_variant(@variants, @product) rescue @product end %>
 <script >
 window.addEventListener('turbolinks:load', function () {
     <% fa_product_price = @product.price %>
@@ -7,7 +8,7 @@ window.addEventListener('turbolinks:load', function () {
         'send_to': '<%= ga_tracker.analytics_id %>',
         'value': <%= fa_product_price %>,
         'currency': '<%=current_currency %>',
-        'items': [<%=product_for_ga(@product,@variants) %>]
+        'items': [<%=product_for_ga(@product,variant) %>]
     });
 });
 </script>

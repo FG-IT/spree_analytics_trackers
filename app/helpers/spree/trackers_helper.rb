@@ -26,7 +26,7 @@ module Spree
       end.merge(optional).to_json.html_safe
     end
 
-    def product_for_ga(product, variants = nil)
+    def product_for_ga(product, variant)
       cache_key = [
           'spree-ga-product',
           I18n.locale,
@@ -34,7 +34,6 @@ module Spree
           product.cache_key_with_version
       ].compact.join('/')
 
-      default_variant = default_variant(variants, product)
 
       # product_hash = Rails.cache.fetch(cache_key) do
       #   {
@@ -51,8 +50,8 @@ module Spree
 
       product_hash =
           {
-              id: default_variant.id,
-              item_id: default_variant.id,
+              id: variant.id,
+              item_id: variant.id,
               category: product.category&.name,
               item_name: product.name,
               brand: product.brand&.name,
