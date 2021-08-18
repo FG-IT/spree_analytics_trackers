@@ -12,9 +12,9 @@ module Spree
         {
             product_id: product.id,
             sku: product.sku,
-            category: product.category&.name,
+            # category: product.category&.name,
             name: product.name,
-            brand: product.brand&.name,
+            # brand: product.brand&.name,
             price: product.price_in(current_currency).amount&.to_f,
             currency: current_currency,
             url: spree.product_url(product)
@@ -52,9 +52,9 @@ module Spree
           {
               id: variant.id,
               item_id: variant.id,
-              category: product.category&.name,
+              # category: product.category&.name,
               item_name: product.name,
-              brand: product.brand&.name,
+              # brand: product.brand&.name,
               price: product.price_in(current_currency).amount&.to_f,
               quantity: 10,
               currency: current_currency
@@ -82,9 +82,9 @@ module Spree
             id: product.google_merchant_id ? product.google_merchant_id : variant.id,
             name: variant.name,
             currency: current_currency,
-            category: product.category&.name,
+            # category: product.category&.name,
             variant: variant.options_text,
-            brand: product.brand&.name,
+            # brand: product.brand&.name,
             quantity: line_item.quantity,
             price: variant.price_in(current_currency).amount&.to_f
         }.to_json.html_safe
