@@ -10,7 +10,9 @@ module Spree
 
       product_hash = Rails.cache.fetch(cache_key) do
         {
-            product_id: product.id,
+            product_id: begin
+                          product_id.google_merchant_id rescue product_id.id
+                        end,
             sku: product.sku,
             # category: product.category&.name,
             name: product.name,
@@ -50,8 +52,12 @@ module Spree
 
       product_hash =
           {
-              id: variant.id,
-              item_id: variant.id,
+              id: begin
+                    variant.google_merchant_id rescue variant.id
+                  end,
+              item_id: begin
+                         variant.google_merchant_id rescue variant.id
+                       end,
               # category: product.category&.name,
               item_name: product.name,
               # brand: product.brand&.name,
@@ -79,7 +85,9 @@ module Spree
       Rails.cache.fetch(cache_key) do
         product = line_item.product
         {
-            id: product.google_merchant_id ? product.google_merchant_id : variant.id,
+            id: begin
+                  variant.google_merchant_id rescue variant.id
+                end,
             name: variant.name,
             currency: current_currency,
             # category: product.category&.name,
