@@ -2,12 +2,11 @@ module SpreeAnalyticsTrackers
   module StoreControllerDecorator
     def self.included(base)
       base.include ::Spree::BaseHelper
-      
-      base.helper 'spree/trackers'
+      base.include Spree::TrackersHelper
     end
   end
 end
 
-if defined?(Spree::StoreController)
-  ::Spree::StoreController.include(::SpreeAnalyticsTrackers::StoreControllerDecorator)
-end
+
+::Spree::StoreController.include(::SpreeAnalyticsTrackers::StoreControllerDecorator)
+

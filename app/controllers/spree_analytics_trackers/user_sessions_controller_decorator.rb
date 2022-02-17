@@ -1,11 +1,11 @@
 module SpreeAnalyticsTrackers
   module UserSessionsControllerDecorator
     def self.included(base)
-      base.helper 'spree/trackers'
+      base.helper Spree::TrackersHelper
     end
   end
 end
 
-if defined?(Spree::UserSessionsController)
-  ::Spree::UserSessionsController.include(::SpreeAnalyticsTrackers::UserSessionsControllerDecorator)
-end
+
+::Spree::UserSessionsController.include SpreeAnalyticsTrackers::UserSessionsControllerDecorator
+
