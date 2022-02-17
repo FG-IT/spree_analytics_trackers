@@ -1,7 +1,7 @@
 module SpreeAnalyticsTrackers
   module CheckoutControllerDecorator
     def self.included(base)
-      base.helper Spree::TrackersHelper
+      base.helper 'spree/trackers'
     end
   end
 end
