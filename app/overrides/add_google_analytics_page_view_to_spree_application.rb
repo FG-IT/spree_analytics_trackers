@@ -4,6 +4,6 @@ unless spree_version >= Gem::Version.create('3.3.0') && spree_version < Gem::Ver
     virtual_path: 'spree/shared/_head',
     name: 'add_google_analytics_page_viewed_to_spree_application',
     insert_before: 'meta',
-    partial: 'spree/shared/trackers/google_analytics/page_viewed.js',
+    partial: 'spree/shared/trackers/google_analytics/page_viewed.js'
   )
 end

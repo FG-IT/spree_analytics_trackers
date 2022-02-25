@@ -4,6 +4,6 @@ unless spree_version >= Gem::Version.create('3.3.0') && spree_version < Gem::Ver
     virtual_path: 'spree/shared/_head',
     name: 'add_segment_initializer_to_layout',
     insert_after: 'title',
-    partial: 'spree/shared/trackers/segment/initializer.js',
+    partial: 'spree/shared/trackers/segment/initializer.js'
   )
 end
