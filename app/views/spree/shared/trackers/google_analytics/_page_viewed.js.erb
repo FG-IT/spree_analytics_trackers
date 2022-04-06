@@ -1,38 +1,37 @@
 <% if ga_enabled? %>
-<script>
-if (typeof gtag !== 'undefined') {
-    <% if user_id = try_spree_current_user.try(:id) %>
-    gtag('config', '<%= ga_tracker.analytics_id %>', {
-        'user_id': '<%= user_id %>'
-    });
-    <% else %>
-    gtag('config', '<%= ga_tracker.analytics_id %>');
-    <% end %>
-}
-</script>
+  <script>
+  if (typeof gtag !== 'undefined') {
+      <% if user_id = try_spree_current_user.try(:id) %>
+      gtag('config', '<%= ga_tracker.analytics_id %>', {
+          'user_id': '<%= user_id %>'
+      });
+      <% else %>
+      gtag('config', '<%= ga_tracker.analytics_id %>');
+      <% end %>
+  }
+  </script>
 
-<% if controller_name == 'orders' and action_name == 'edit' %>
-<% fa_event = 'view_cart' %>
-<script>
-gtag('event', '<%= fa_event %>', {
-    'send_to': '<%= ga_tracker.analytics_id %>',
-    'currency': '<%=current_currency %>',
-    <% if @order %>
-    'items': [
-        <% @order.line_items.each do |item| %>
-        {
-            'id': '<%= item.variant_id %>',
-            'quantity': '<%= item.quantity %>',
-            'name': '<%= item.product.name %>',
-            'google_business_vertical': 'retail',
-            'currency': "<%= item.currency %>",
-            'price': '<%= item.price %>'
-        },
+  <% if controller_name == 'orders' and action_name == 'edit' %>
+    <% fa_event = 'view_cart' %>
+    <script>
+    gtag('event', '<%= fa_event %>', {
+        'send_to': '<%= ga_tracker.analytics_id %>',
+        'currency': '<%=current_currency %>',
+        <% if @order %>
+        'items': [
+            <% @order.line_items.each do |item| %>
+            {
+                'id': '<%= item.variant_id %>',
+                'quantity': '<%= item.quantity %>',
+                'name': '<%= item.product.name %>',
+                'google_business_vertical': 'retail',
+                'currency': "<%= item.currency %>",
+                'price': '<%= item.price %>'
+            },
+            <% end %>
+        ],
         <% end %>
-    ],
-    <% end %>
-});
-</script>
-
-<% end %>
+    });
+    </script>
+  <% end %>
 <% end %>
