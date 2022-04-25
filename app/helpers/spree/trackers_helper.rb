@@ -130,24 +130,5 @@ module Spree
     def ga_enabled?
       ga_tracker.present?
     end
-
-    def get_cj_page_type(controller_name, action_name)
-      case controller_name
-      when 'home'
-        'homepage'
-      when 'products'
-        'productDetail'
-      when 'orders'
-        if action_name == 'show'
-          'conversionConfirmation'
-        else
-          'cart'
-        end
-      when 'taxons'
-        'category'
-      else
-        'searchResults'
-      end
-    end
-  end
+    
 end
