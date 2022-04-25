@@ -130,5 +130,5 @@ module Spree
     def ga_enabled?
       ga_tracker.present?
     end
-    
+  end 
 end
