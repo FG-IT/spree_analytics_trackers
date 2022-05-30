@@ -99,6 +99,57 @@ module Spree
       end
     end
 
+    def matomo_line_item(line_item)
+      variant = line_item.variant
+
+      cache_key = [
+          'spree-matomo-line-item',
+          I18n.locale,
+          current_currency,
+          line_item.cache_key_with_version,
+          variant.cache_key_with_version
+      ].compact.join('/')
+
+      Rails.cache.fetch(cache_key) do
+        product = line_item.product
+        if defined?(::Spree::Representation)
+          resp = product.presenter
+          category = resp[:taxons].size > 0 ? resp[:taxons][-1].map {|t| t[:name] } : []
+        else
+          t_pathes = []
+          product.taxons.each do |taxon|
+            if taxon.parent_id.nil?
+              next
+            end
+
+            t_path = []
+            taxon.self_and_ancestors.each do |t|
+              if t.name.downcase == 'categories' || t.hide_from_nav
+                next
+              end
+
+              t_path << t.name
+            end
+
+            if t_path.size > 0
+              t_pathes << t_path
+            end
+          end
+          t_pathes.sort {|t1, t2| t1.size <=> t2.size }
+
+          category = t_pathes.size > 0 ? t_pathes[-1] : []
+        end
+
+        {
+          name: variant.name,
+          sku: variant.sku,
+          category: category,
+          quantity: line_item.quantity,
+          price: variant.price_in(current_currency).amount&.to_f
+        }
+      end
+    end
+
     def filtering_param_present?(param)
       params.key?(param) && params.fetch(param).present?
     end
@@ -129,6 +180,14 @@ module Spree
 
     def ga_enabled?
       ga_tracker.present?
+    end
+
+    def matomo_tracker
+      @matomo_tracker ||= Spree::Tracker.current(:matomo, current_store)
+    end
+
+    def matomo_enabled?
+      matomo_tracker.present?
     end
   end 
 end

@@ -1,0 +1,39 @@
+<% if defined?(matomo_enabled?) && matomo_enabled? %>
+<script>
+  (function() {
+    var previousPageUrl = null;
+    window.addEventListener('turbolinks:load', function(event) {
+      if (previousPageUrl) {
+        _paq.push(['setReferrerUrl', previousPageUrl]);
+        _paq.push(['setCustomUrl', window.location.href]);
+        _paq.push(['setDocumentTitle', document.title]);
+        if (event.data && event.data.timing) {
+          _paq.push(['setGenerationTimeMs', event.data.timing.visitEnd - event.data.timing.visitStart]);
+        }
+        <% if @product.present? %>
+        <%
+          if defined?(::Spree::Representation)
+            resp = @product.presenter
+            productSku = resp[:sku]
+            productName = resp[:name]
+            productPrice = resp[:price]
+            categoryName = resp[:taxons].size > 0 ? resp[:taxons][-1].map {|t| t[:name] } : []
+          else
+            productSku = @product.sku
+            productName = @product.name
+            productPrice = @product.price
+            categoryName = []
+          end
+        %>
+        // Push Product View Data to Matomo - Populate parameters dynamically
+        _paq.push(['setEcommerceView', "<%= productSku %>", "<%= productName %>", <%= raw categoryName %>, <%= productPrice %>]);
+        <% end %>
+
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+      }
+      previousPageUrl = window.location.href;
+    });
+  })();
+</script>
+<% end %>

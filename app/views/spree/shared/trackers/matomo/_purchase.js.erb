@@ -1,0 +1,19 @@
+<% if defined?(matomo_enabled?) && matomo_enabled? && @order.present? && order_just_completed?(@order) %>
+<script>
+  window.addEventListener('turbolinks:load', function() {
+    // Product Array
+    <% @order.line_items.each do |line_item| %>
+    <% item = matomo_line_item(line_item) %>
+    _paq.push(['addEcommerceItem', "<%= item[:sku] %>", "<%= item[:name] %>", <%= raw item[:category] %>, <%= item[:price] %>, <%= item[:quantity] %>]);
+    <% end %>
+    // Order Array - Parameters should be generated dynamically
+    <%
+      revenue = @order.total.blank? ? 0 : @order.total.to_f
+      tax = @order.tax_total.blank? ? 0 : @order.tax_total.to_f
+      shipping = @order.shipment_total.blank? ? 0 : @order.shipment_total.to_f
+      discount = @order.promo_total.blank? ? 0 : @order.promo_total.to_f
+    %>
+    _paq.push(['trackEcommerceOrder', "<%= @order.number %>", <%= revenue %>, <%= revenue - shipping %>, <%= tax %>, <%= shipping %>, <%= discount %>]);
+  });
+</script>
+<% end %>

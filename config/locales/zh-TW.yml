@@ -10,6 +10,7 @@ zh-TW:
     new_tracker: 新增追蹤器
     google_analytics: Google 分析
     google_analytics_id: Google 追蹤器代碼
+    tracker_url: 追蹤器鏈接（可選）
     analytics_desc_header_1: Spree 分析
     analytics_desc_header_2: 新增即時分析到 Spree 的後台
     analytics_desc_list_1: 獲得即時銷售數據

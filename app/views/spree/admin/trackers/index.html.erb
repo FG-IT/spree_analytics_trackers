@@ -10,6 +10,7 @@
   <table class="table">
     <thead>
       <tr data-hook="admin_trackers_index_headers">
+        <th><%= Spree.t(:tracker_url) %></th>
         <th><%= Spree.t(:google_analytics_id) %></th>
         <th><%= Spree.t(:analytics_engine) %></th>
         <th><%= Spree.t(:store) %></th>
@@ -20,6 +21,7 @@
     <tbody>
       <% @trackers.each do |tracker|%>
         <tr id="<%= spree_dom_id tracker %>" data-hook="admin_trackers_index_rows">
+          <td><%= tracker.tracker_url ? tracker.tracker_url : 'N/A' %></td>
           <td><%= tracker.analytics_id %></td>
           <td><%= tracker.engine.humanize %></td>
           <td><%= tracker.store&.name %></td>
