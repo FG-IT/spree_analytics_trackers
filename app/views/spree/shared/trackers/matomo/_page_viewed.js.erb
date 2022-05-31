@@ -8,7 +8,7 @@
         _paq.push(['setCustomUrl', window.location.href]);
         _paq.push(['setDocumentTitle', document.title]);
         if (event.data && event.data.timing) {
-          _paq.push(['setGenerationTimeMs', event.data.timing.visitEnd - event.data.timing.visitStart]);
+          _paq.push(['setPagePerformanceTiming', event.data.timing.visitEnd - event.data.timing.visitStart]);
         }
         <% if @product.present? %>
         <%
