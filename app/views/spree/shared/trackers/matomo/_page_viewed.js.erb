@@ -10,6 +10,9 @@
         if (event.data && event.data.timing) {
           _paq.push(['setPagePerformanceTiming', event.data.timing.visitEnd - event.data.timing.visitStart]);
         }
+        <% if user_id = try_spree_current_user.try(:email) %>
+        _paq.push(['setUserId', <%= user_id %>]);
+        <% end %>
         <% if @product.present? %>
         <%
           if defined?(::Spree::Representation)
