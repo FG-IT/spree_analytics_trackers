@@ -1,0 +1,8 @@
+<% if defined?(matomo_enabled?) && matomo_enabled? && params.key?(:keywords) && params[:keywords].present? %>
+<% result_cnt = @products.empty? ? 0 : @products.total_count %>
+<script>
+  window.addEventListener('turbolinks:load', function() {
+    _paq.push(['trackSiteSearch', "<%= params[:keywords] %>", false, <%= result_cnt %>]);
+  });
+</script>
+<% end %>
