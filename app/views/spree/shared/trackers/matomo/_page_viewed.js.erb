@@ -10,31 +10,56 @@
         if (event.data && event.data.timing) {
           _paq.push(['setPagePerformanceTiming', event.data.timing.visitEnd - event.data.timing.visitStart]);
         }
-        <% if user_id = try_spree_current_user.try(:email) %>
-        _paq.push(['setUserId', <%= user_id %>]);
-        <% end %>
-        <% if @product.present? %>
-        <%
-          if defined?(::Spree::Representation)
-            resp = @product.presenter
-            productSku = resp[:sku]
-            productName = resp[:name]
-            productPrice = resp[:price]
-            categoryName = resp[:taxons].size > 0 ? resp[:taxons][-1].map {|t| t[:name] } : []
-          else
-            productSku = @product.sku
-            productName = @product.name
-            productPrice = @product.price
-            categoryName = []
-          end
-        %>
-        // Push Product View Data to Matomo - Populate parameters dynamically
-        _paq.push(['setEcommerceView', "<%= productSku %>", "<%= productName %>", <%= raw categoryName %>, <%= productPrice %>]);
-        <% end %>
-
-        _paq.push(['trackPageView']);
-        _paq.push(['enableLinkTracking']);
       }
+      <% if user_id = try_spree_current_user.try(:email) %>
+      _paq.push(['setUserId', "<%= user_id %>"]);
+      <% end %>
+      <% if @product.present? %>
+      <%
+        if defined?(::Spree::Representation)
+          resp = @product.presenter
+          productSku = resp[:sku]
+          productName = resp[:name]
+          productPrice = resp[:price]
+          categoryName = resp[:taxons].size > 0 ? resp[:taxons][-1].map {|t| t[:name] } : []
+        else
+          productSku = @product.sku
+          productName = @product.name
+          productPrice = @product.price
+          categoryName = []
+        end
+      %>
+      // Push Product View Data to Matomo - Populate parameters dynamically
+      _paq.push(['setEcommerceView', "<%= productSku %>", "<%= productName %>", <%= raw categoryName %>, <%= productPrice %>]);
+
+      // $('.product-added-modal').on('shown.bs.modal', function() {
+      //   var variant = null;
+      //   if (Spree) {
+      //     variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
+      //   } else {
+      //     var variantId = $('[name="variant_id"]').val();
+      //     var variants = JSON.parse($('.add-to-cart-form').attr('data-variants'));
+
+      //     variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
+      //   }
+      //   if (variant) {
+      //     var variantPrice = parseFloat(variant.price);
+      //     _paq.push(['addEcommerceItem', variant.sku, "<%= productName %>", <%= raw categoryName %>, parseFloat(variantPrice), quantity_increment]);
+      //     _paq.push(['trackEcommerceCartUpdate', variantPrice]); 
+      //   }
+      // });
+      $('.add-to-cart-form').on('product_add_to_cart', function(event, variant, quantity_increment, cart) {
+        if (variant) {
+          var variantPrice = parseFloat(variant.price);
+          _paq.push(['addEcommerceItem', variant.sku, "<%= productName %>", <%= raw categoryName %>, parseFloat(variantPrice), quantity_increment]);
+          _paq.push(['trackEcommerceCartUpdate', variantPrice]); 
+        }
+      });
+      <% end %>
+
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+
       previousPageUrl = window.location.href;
     });
   })();
