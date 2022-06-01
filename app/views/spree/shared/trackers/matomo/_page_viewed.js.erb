@@ -14,48 +14,44 @@
       <% if user_id = try_spree_current_user.try(:email) %>
       _paq.push(['setUserId', "<%= user_id %>"]);
       <% end %>
-      <% if @product.present? %>
-      <%
-        if defined?(::Spree::Representation)
-          resp = @product.presenter
-          productSku = resp[:sku]
-          productName = resp[:name]
-          productPrice = resp[:price]
-          categoryName = resp[:taxons].size > 0 ? resp[:taxons][-1].map {|t| t[:name] } : []
-        else
-          productSku = @product.sku
-          productName = @product.name
-          productPrice = @product.price
-          categoryName = []
-        end
-      %>
-      // Push Product View Data to Matomo - Populate parameters dynamically
-      _paq.push(['setEcommerceView', "<%= productSku %>", "<%= productName %>", <%= raw categoryName %>, <%= productPrice %>]);
 
-      // $('.product-added-modal').on('shown.bs.modal', function() {
-      //   var variant = null;
-      //   if (Spree) {
-      //     variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
-      //   } else {
-      //     var variantId = $('[name="variant_id"]').val();
-      //     var variants = JSON.parse($('.add-to-cart-form').attr('data-variants'));
+      console.log('PRODUCT_ID: ' + PRODUCT_ID);
+      if (PRODUCT_ID) {
+        var variant = null;
+        var cartForm = $('.add-to-cart-form');
+        if (cartForm.length > 0) {
+          var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
+          var breadcrumbs = $('#breadcrumbs li.breadcrumb-item').map(function() { return $(this).text().trim(); }).get();
+          breadcrumbs.shift();
+          var last = breadcrumbs[breadcrumbs.length - 1];
+          if (last && last.length > 30) {
+            breadcrumbs.pop();
+          }
+          if (Spree) {
+            variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
+          } else {
+            var variantId = $('[name="variant_id"]').val();
+            var variants = JSON.parse(cartForm.attr('data-variants'));
 
-      //     variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
-      //   }
-      //   if (variant) {
-      //     var variantPrice = parseFloat(variant.price);
-      //     _paq.push(['addEcommerceItem', variant.sku, "<%= productName %>", <%= raw categoryName %>, parseFloat(variantPrice), quantity_increment]);
-      //     _paq.push(['trackEcommerceCartUpdate', variantPrice]); 
-      //   }
-      // });
-      $('.add-to-cart-form').on('product_add_to_cart', function(event, variant, quantity_increment, cart) {
-        if (variant) {
-          var variantPrice = parseFloat(variant.price);
-          _paq.push(['addEcommerceItem', variant.sku, "<%= productName %>", <%= raw categoryName %>, parseFloat(variantPrice), quantity_increment]);
-          _paq.push(['trackEcommerceCartUpdate', variantPrice]); 
+            variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
+          }
+          console.log(productSummary);
+          console.log(breadcrumbs);
+          console.log(variant);
+          if (variant) {
+            // Push Product View Data to Matomo - Populate parameters dynamically
+            _paq.push(['setEcommerceView', variant.sku, productSummary.name, breadcrumbs, variant.price]);
+          }
+
+          cartForm.on('product_add_to_cart', function(event, variant, quantity_increment, cart) {
+            if (variant) {
+              var variantPrice = parseFloat(variant.price);
+              _paq.push(['addEcommerceItem', variant.sku, productSummary.name, breadcrumbs, variantPrice, quantity_increment]);
+              _paq.push(['trackEcommerceCartUpdate', variantPrice]); 
+            }
+          });
         }
-      });
-      <% end %>
+      }
 
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
