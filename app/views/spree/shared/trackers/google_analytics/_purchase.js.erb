@@ -1,4 +1,4 @@
-<% if ga_enabled? && @order.present? && order_just_completed?(@order) %>
+<% if ga_enabled? && @order.present? %>
   <script>
     window.addEventListener('turbolinks:load', function() {
       if (typeof gtag !== 'undefined') {
@@ -15,6 +15,22 @@
               <%= ga_line_item(line_item) %>,
             <% end %>
           ]
+        });
+
+        gtag('set', 'user_data', {
+          'email': "<%= @order.email %>",
+          <% unless @order&.ship_address&.phone.blank? %>
+          'phone_number': "<%= @order.ship_address.phone %>",
+          <% end %>
+          'address': {
+            'first_name': "<%= @order&.ship_address&.firstname %>",
+            'last_name': "<%= @order&.ship_address&.lastname %>",
+            'street': "<%= @order&.ship_address&.address1 %>",
+            'city': "<%= @orderi&.ship_address&.city %>",
+            'region': "<%= @order&.ship_address&.state_text %>",
+            'postal_code': "<%= @order&.ship_address&.zipcode %>",
+            'country':  "<%= @order&.ship_address&.country&.iso %>"
+          }
         });
       }
     });
