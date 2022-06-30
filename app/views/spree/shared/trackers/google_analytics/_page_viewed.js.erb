@@ -1,4 +1,4 @@
-<% if ga_enabled? %>
+<% if defined?(segment_tracker) && ga_enabled? %>
   <script>
   if (typeof gtag !== 'undefined') {
       <% if user_id = try_spree_current_user.try(:id) %>

@@ -1,4 +1,4 @@
-<% if segment_enabled? && params.key?(:keywords) && params[:keywords].present? %>
+<% if defined?(segment_tracker) && segment_enabled? && params.key?(:keywords) && params[:keywords].present? %>
   <script>
     window.addEventListener('turbolinks:load', function() {
       if (typeof analytics !== 'undefined') {
