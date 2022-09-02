@@ -1,4 +1,4 @@
-<% if segment_enabled? && @order.present? && !@order.completed? %>
+<% if defined?(segment_enabled?) && segment_enabled? && @order.present? && !@order.completed? %>
   <script>
     window.addEventListener('turbolinks:load', function() {
       if (typeof analytics !== 'undefined') {

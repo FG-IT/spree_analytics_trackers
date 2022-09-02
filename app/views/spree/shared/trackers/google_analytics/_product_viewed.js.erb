@@ -1,4 +1,4 @@
-<% if ga_enabled? && @product.present? %>
+<% if defined?(ga_enabled?) && ga_enabled? && @product.present? %>
 <% variant = begin default_variant(@variants, @product) rescue @product end %>
 <script >
 window.addEventListener('turbolinks:load', function () {

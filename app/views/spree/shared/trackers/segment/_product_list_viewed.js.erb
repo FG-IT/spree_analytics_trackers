@@ -1,4 +1,4 @@
-<% if segment_enabled? && defined?(products) && products.present? %>
+<% if defined?(segment_enabled?) && segment_enabled? && defined?(products) && products.present? %>
   <script>
     window.addEventListener('turbolinks:load', function() {
       if (typeof analytics !== 'undefined') {

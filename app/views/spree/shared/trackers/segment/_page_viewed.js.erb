@@ -1,4 +1,4 @@
-<% if segment_enabled? %>
+<% if defined?(segment_enabled?) && segment_enabled? %>
   <script>
     if (typeof analytics !== 'undefined') {
       analytics.page();

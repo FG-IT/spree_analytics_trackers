@@ -1,4 +1,4 @@
-<% if segment_enabled? && any_filtering_params? %>
+<% if defined?(segment_enabled?) && segment_enabled? && any_filtering_params? %>
   <script>
     window.addEventListener('turbolinks:load', function() {
       if (typeof analytics !== 'undefined') {
