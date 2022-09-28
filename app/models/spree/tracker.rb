@@ -16,15 +16,27 @@ module Spree
       engine ||= TRACKING_ENGINES.first
       store  ||= Spree::Store.default
 
-      tracker = Rails.cache.fetch("current_tracker/#{engine}/#{store.id}") do
-        active.find_by(store: store, engine: engine)
+      if true
+        tracker = self.trackers.values.find {|t| t.active && t.store_id == store.id && t.engine == engine }
+      else
+        tracker = Rails.cache.fetch("current_tracker/#{engine}/#{store.id}") do
+          active.find_by(store: store, engine: engine)
+        end
       end
       tracker.analytics_id.present? ? tracker : nil if tracker
     end
 
+    def self.trackers
+      @@trackers_cache ||= ::Hash[ ::Spree::Tracker.all.map {|t| [t.id, t] } ]
+    end
+
     def clear_cache
-      TRACKING_ENGINES.each do |engine|
-        Rails.cache.delete("current_tracker/#{engine}/#{store_id}")
+      if true
+        @@trackers_cache = nil
+      else
+        TRACKING_ENGINES.each do |engine|
+          Rails.cache.delete("current_tracker/#{engine}/#{store_id}")
+        end
       end
     end
   end
