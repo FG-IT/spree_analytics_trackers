@@ -1,5 +1,7 @@
 module Spree
   class Tracker < Spree::Base
+    @@trackers_cache = nil
+
     TRACKING_ENGINES = %i(google_analytics segment matomo).freeze
     enum engine: TRACKING_ENGINES
 
@@ -17,6 +19,7 @@ module Spree
       store  ||= Spree::Store.default
 
       if true
+        engine = engine.to_s
         tracker = self.trackers.values.find {|t| t.active && t.store_id == store.id && t.engine == engine }
       else
         tracker = Rails.cache.fetch("current_tracker/#{engine}/#{store.id}") do
