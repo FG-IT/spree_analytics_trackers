@@ -1,0 +1,9 @@
+<% if defined?(fp_enabled?) && fp_enabled? && params.key?(:keywords) && params[:keywords].present? %>
+  <script>
+    window.addEventListener('turbolinks:load', function() {
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'Search', {search_string: '<%= params[:keywords] %>'});
+      }
+    });
+  </script>
+<% end %>

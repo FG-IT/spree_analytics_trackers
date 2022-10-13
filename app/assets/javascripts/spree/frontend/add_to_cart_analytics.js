@@ -34,6 +34,17 @@ function segmentAddtoCart(variant, quantity, currency) {
     });
 }
 
+function fpAddToCart(variant, quantity, currency = 'USD') {
+    fbq('track', 'AddToCart', {
+        content_type: 'product',
+        content_ids: [variant.id],
+        content_name: variant.name,
+        contents: [{id: variant.id, quantity: quantity}],
+        currency: currency,
+        value: variant.price
+    });
+}
+
 Spree.ready(function () {
     $('body').on('product_add_to_cart', function (event) {
         var variant = event.variant
@@ -46,6 +57,10 @@ Spree.ready(function () {
 
         if (typeof analytics !== 'undefined') {
             segmentAddtoCart(variant, quantity, currency)
+        }
+
+        if (typeof fbq !== 'undefined') {
+            fpAddToCart(variant, quantity, currency)
         }
     })
 });

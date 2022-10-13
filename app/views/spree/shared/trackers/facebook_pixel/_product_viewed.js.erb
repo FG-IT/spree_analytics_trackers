@@ -1,0 +1,29 @@
+<% if defined?(fp_enabled?) && fp_enabled? && @product.present? %>
+<script >
+window.addEventListener('turbolinks:load', function () {
+    var variant = null;
+    var cartForm = $('.add-to-cart-form');
+    if (cartForm.length > 0) {
+        var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
+        if (Spree) {
+            variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
+        } else {
+            var variantId = $('[name="variant_id"]').val();
+            var variants = JSON.parse(cartForm.attr('data-variants'));
+
+            variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
+        }
+        if (variant) {
+            fbq('track', 'ViewContent', {
+                content_type: 'product',
+                content_ids: [variant.id],
+                content_name: productSummary.name,
+                contents: [{id: variant.id, quantity: 1}],
+                currency: variant.currency,
+                value: variant.price
+            });
+        }
+    }
+});
+</script>
+<% end %>

@@ -2,7 +2,7 @@ module Spree
   class Tracker < Spree::Base
     @@trackers_cache = nil
 
-    TRACKING_ENGINES = %i(google_analytics segment matomo).freeze
+    TRACKING_ENGINES = %i(google_analytics segment matomo facebook_pixel).freeze
     enum engine: TRACKING_ENGINES
 
     after_commit :clear_cache

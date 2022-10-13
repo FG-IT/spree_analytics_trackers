@@ -1,0 +1,13 @@
+<% if defined?(fp_enabled?) && fp_enabled? && @order.present? && !@order.completed? %>
+<script type="text/javascript">
+window.addEventListener('turbolinks:load', function () {
+    if (typeof fbq !== 'undefined') {
+        <% if (@order.checkout_steps.index(@order.state) == 0) %>
+        fbq('track', 'InitiateCheckout', {num_items: <%= @order.line_items.map {|li| li.quantity }&.sum || 1 %>});
+        <% elsif (@order.checkout_steps.index(@order.state) == 2) %>
+        fbq('track', 'AddPaymentInfo');
+        <%end %>
+    }
+});
+</script>
+<% end %>

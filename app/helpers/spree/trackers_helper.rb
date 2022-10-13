@@ -150,6 +150,17 @@ module Spree
       end
     end
 
+    def fp_line_item(line_item)
+      variant = line_item.variant
+
+      {
+        name: variant.name,
+        sku: variant.sku,
+        quantity: line_item.quantity,
+        price: variant.price_in(current_currency).amount&.to_f
+      }
+    end
+
     def filtering_param_present?(param)
       params.key?(param) && params.fetch(param).present?
     end
@@ -188,6 +199,14 @@ module Spree
 
     def matomo_enabled?
       matomo_tracker.present?
+    end
+
+    def fp_tracker
+      @fp_tracker ||= Spree::Tracker.current(:facebook_pixel, current_store)
+    end
+
+    def fp_enabled?
+      fp_tracker.present?
     end
   end 
 end
