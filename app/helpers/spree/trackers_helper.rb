@@ -152,8 +152,10 @@ module Spree
 
     def fp_line_item(line_item)
       variant = line_item.variant
+      content_id = variant.respond_to?(:feed_id) ? variant.feed_id : "#{current_store.code}_#{variant.product_id}_#{variant.id}"
 
       {
+        id: content_id,
         name: variant.name,
         sku: variant.sku,
         quantity: line_item.quantity,

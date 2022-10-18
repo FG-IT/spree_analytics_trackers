@@ -6,7 +6,7 @@ window.addEventListener('turbolinks:load', function () {
         fbq('track', 'InitiateCheckout', {num_items: <%= @order.line_items.map {|li| li.quantity }&.sum || 1 %>});
         <% elsif (@order.checkout_steps.index(@order.state) == 2) %>
         fbq('track', 'AddPaymentInfo');
-        <%end %>
+        <% end %>
     }
 });
 </script>

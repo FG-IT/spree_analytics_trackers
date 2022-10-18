@@ -1,6 +1,8 @@
 <% if defined?(fp_enabled?) && fp_enabled? && @product.present? %>
 <script >
 window.addEventListener('turbolinks:load', function () {
+    var prefix = '<%= current_store.code  %>';
+    var productId = '<%= @product.id %>';
     var variant = null;
     var cartForm = $('.add-to-cart-form');
     if (cartForm.length > 0) {
@@ -14,9 +16,10 @@ window.addEventListener('turbolinks:load', function () {
             variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
         }
         if (variant) {
+            var contentId = [prefix, productId, variant.id].join('_');
             fbq('track', 'ViewContent', {
                 content_type: 'product',
-                content_ids: [variant.id],
+                content_ids: [contentId],
                 content_name: productSummary.name,
                 contents: [{id: variant.id, quantity: 1}],
                 currency: variant.currency,

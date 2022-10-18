@@ -35,11 +35,20 @@ function segmentAddtoCart(variant, quantity, currency) {
 }
 
 function fpAddToCart(variant, quantity, currency = 'USD') {
+    var contentIdParts = [];
+    if (variant.store) {
+        contentIdParts.push(variant.store);
+    }
+    if (variant.product_id) {
+        contentIdParts.push(variant.product_id);
+    }
+    contentIdParts.push(variant.id);
+    var contentId = contentIdParts.join('_');
     fbq('track', 'AddToCart', {
         content_type: 'product',
-        content_ids: [variant.id],
+        content_ids: [contentId],
         content_name: variant.name,
-        contents: [{id: variant.id, quantity: quantity}],
+        contents: [{id: contentId, quantity: quantity}],
         currency: currency,
         value: variant.price
     });
