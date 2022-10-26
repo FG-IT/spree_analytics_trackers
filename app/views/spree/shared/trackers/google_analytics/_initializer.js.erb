@@ -1,25 +1,29 @@
 <% if defined?(ga_enabled?) and ga_enabled? %>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script defer src="https://www.googletagmanager.com/gtag/js?id=<%= ga_tracker.analytics_id %>"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+window.addEventListener('turbolinks:load', function () {
+  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+  g.defer=true; g.src='https://www.googletagmanager.com/gtag/js?id=<%= ga_tracker.analytics_id %>'; s.parentNode.insertBefore(g,s);
+});
 
-    gtag('config', '<%= ga_tracker.analytics_id %>', { 'send_page_view': false });
-    gtag('set', 'allow_google_signals', true )
-    gtag('set', 'allow_ad_personalization_signals', true );
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
 
-    function clearGAplugins() {
-      if (typeof ga !== "undefined" && typeof ga.getAll === "function") {
-        var trackingDom = ga.getAll()[0].get('trackingId');
-        if (trackingDom !== undefined) {
-          var trackingId = trackingDom.split('-').join('_')
-          if (trackingId !== undefined && ga.o !== undefined && ga.o["gtag_" + trackingId] !== undefined) {
-            delete ga.o["gtag_" + trackingId].plugins_
-          }
-        }
+gtag('config', '<%= ga_tracker.analytics_id %>', { 'send_page_view': false });
+gtag('set', 'allow_google_signals', true )
+gtag('set', 'allow_ad_personalization_signals', true );
+
+function clearGAplugins() {
+  if (typeof ga !== "undefined" && typeof ga.getAll === "function") {
+    var trackingDom = ga.getAll()[0].get('trackingId');
+    if (trackingDom !== undefined) {
+      var trackingId = trackingDom.split('-').join('_')
+      if (trackingId !== undefined && ga.o !== undefined && ga.o["gtag_" + trackingId] !== undefined) {
+        delete ga.o["gtag_" + trackingId].plugins_
       }
     }
-  </script>
+  }
+}
+</script>
 <% end %>

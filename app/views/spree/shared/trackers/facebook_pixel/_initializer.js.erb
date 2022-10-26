@@ -1,6 +1,7 @@
 <% if defined?(fp_enabled?) and fp_enabled? %>
 <!-- Facebook Pixel Code -->
 <script>
+window.addEventListener('turbolinks:load', function () {
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -10,6 +11,7 @@
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '<%= fp_tracker.analytics_id %>');
+});
 </script>
 <!-- End Facebook Pixel Code -->
 

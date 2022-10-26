@@ -1,6 +1,7 @@
 <% if defined?(matomo_enabled?) and matomo_enabled? %>
 <!-- Matomo -->
 <script>
+window.addEventListener('turbolinks:load', function () {
   var _paq = window._paq = window._paq || [];
   (function() {
     var u="https://<%= matomo_tracker.tracker_url %>/";
@@ -9,6 +10,7 @@
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.defer=true; g.src='//cdn.matomo.cloud/<%= matomo_tracker.tracker_url %>/matomo.js'; s.parentNode.insertBefore(g,s);
   })();
+});
 </script>
 <!-- End Matomo Code -->
 <% end %>
