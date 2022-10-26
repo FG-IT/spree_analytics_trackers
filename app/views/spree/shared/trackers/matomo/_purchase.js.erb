@@ -1,4 +1,4 @@
-<% if defined?(matomo_enabled?) && matomo_enabled? && @order.present? && order_just_completed?(@order) %>
+<% if defined?(matomo_enabled?) && matomo_enabled? && @order.present? %>
 <script>
   window.addEventListener('turbolinks:load', function() {
     // Product Array

@@ -1,13 +1,15 @@
-<% if defined?(fp_enabled?) && fp_enabled? && @order.present? && order_just_completed?(@order) %>
+<% if defined?(fp_enabled?) && fp_enabled? && @order.present? %>
 <% items = @order.line_items.map {|line_item| fp_line_item(line_item) } %>
 <script>
   window.addEventListener('turbolinks:load', function() {
-    fbq('track', 'Purchase', {
-      content_type: 'product',
-      contents: <%= raw JSON.generate(items) %>,
-      currency: "<%= @order.currency %>",
-      value: <%= @order.total %>
-    });
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'Purchase', {
+        content_type: 'product',
+        contents: <%= raw JSON.generate(items) %>,
+        currency: "<%= @order.currency %>",
+        value: <%= @order.total %>
+      });
+    }
   });
 </script>
 <% end %>
