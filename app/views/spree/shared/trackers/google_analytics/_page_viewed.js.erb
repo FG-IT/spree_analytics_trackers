@@ -1,19 +1,14 @@
 <% if defined?(ga_enabled?) && ga_enabled? %>
   <script>
   if (typeof gtag !== 'undefined') {
-      <% if user_id = try_spree_current_user.try(:id) %>
-      gtag('config', '<%= ga_tracker.analytics_id %>', {
-          'user_id': '<%= user_id %>'
-      });
-      <% else %>
-      gtag('config', '<%= ga_tracker.analytics_id %>');
-      <% end %>
+    gtag('event', 'page_view');
   }
   </script>
 
   <% if controller_name == 'orders' and action_name == 'edit' %>
-    <% fa_event = 'view_cart' %>
-    <script>
+  <% fa_event = 'view_cart' %>
+  <script>
+  if (typeof gtag !== 'undefined') {
     gtag('event', '<%= fa_event %>', {
         'send_to': '<%= ga_tracker.analytics_id %>',
         'currency': '<%=current_currency %>',
@@ -32,6 +27,7 @@
         ],
         <% end %>
     });
-    </script>
+  }
+  </script>
   <% end %>
 <% end %>

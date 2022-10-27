@@ -1,18 +1,24 @@
 <% if defined?(ga_enabled?) and ga_enabled? %>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script>
+if (typeof gtag === 'undefined') {
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+}
+
 window.addEventListener('turbolinks:load', function () {
-  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  g.defer=true; g.src='https://www.googletagmanager.com/gtag/js?id=<%= ga_tracker.analytics_id %>'; s.parentNode.insertBefore(g,s);
+  let src = "https://www.googletagmanager.com/gtag/js?id=<%= ga_tracker.analytics_id %>";
+  let se = document.querySelector('script[src^="' + src + '"]');
+  if (!se) {
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.defer=true; g.src=src; s.parentNode.insertBefore(g,s);
+
+    gtag('config', '<%= ga_tracker.analytics_id %>', { 'send_page_view': false });
+    gtag('set', 'allow_google_signals', true )
+    gtag('set', 'allow_ad_personalization_signals', true );
+  }
 });
-
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-
-gtag('config', '<%= ga_tracker.analytics_id %>', { 'send_page_view': false });
-gtag('set', 'allow_google_signals', true )
-gtag('set', 'allow_ad_personalization_signals', true );
 
 function clearGAplugins() {
   if (typeof ga !== "undefined" && typeof ga.getAll === "function") {
