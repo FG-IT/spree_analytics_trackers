@@ -1,6 +1,7 @@
 <% if defined?(matomo_enabled?) && matomo_enabled? && @order.present? %>
 <script>
   window.addEventListener('turbolinks:load', function() {
+    var _paq = window._paq = window._paq || [];
     // Product Array
     <% @order.line_items.each do |line_item| %>
     <% item = matomo_line_item(line_item) %>

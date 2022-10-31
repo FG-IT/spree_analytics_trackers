@@ -1,6 +1,7 @@
 <% if defined?(fp_enabled?) && fp_enabled? %>
 <script>
-  window.addEventListener('turbolinks:load', function(event) {
+  // window.addEventListener('turbolinks:load', function(event) {
+  window.addEventListener('load', function(event) {
     if (typeof fbq !== 'undefined') {
       fbq('track', 'PageView');
     }

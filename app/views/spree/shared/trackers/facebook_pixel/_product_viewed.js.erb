@@ -1,6 +1,7 @@
 <% if defined?(fp_enabled?) && fp_enabled? && @product.present? %>
 <script >
-window.addEventListener('turbolinks:load', function () {
+// window.addEventListener('turbolinks:load', function () {
+window.addEventListener('load', function () {
     if (typeof fbq !== 'undefined') {
         var prefix = '<%= current_store.code  %>';
         var productId = '<%= @product.id %>';

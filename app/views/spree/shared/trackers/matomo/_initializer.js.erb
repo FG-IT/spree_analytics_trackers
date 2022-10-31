@@ -1,7 +1,8 @@
 <% if defined?(matomo_enabled?) and matomo_enabled? %>
 <!-- Matomo -->
 <script>
-window.addEventListener('turbolinks:load', function () {
+// window.addEventListener('turbolinks:load', function () {
+window.addEventListener('load', function () {
   var _paq = window._paq = window._paq || [];
   (function() {
     let src = "//cdn.matomo.cloud/<%= matomo_tracker.tracker_url %>/matomo.js";

@@ -3,6 +3,7 @@
   (function() {
     var previousPageUrl = null;
     window.addEventListener('turbolinks:load', function(event) {
+      var _paq = window._paq = window._paq || [];
       if (previousPageUrl) {
         _paq.push(['setReferrerUrl', previousPageUrl]);
         _paq.push(['setCustomUrl', window.location.href]);

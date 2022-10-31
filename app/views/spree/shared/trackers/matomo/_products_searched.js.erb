@@ -2,6 +2,7 @@
 <% result_cnt = @products.empty? ? 0 : @products.total_count %>
 <script>
   window.addEventListener('turbolinks:load', function() {
+    var _paq = window._paq = window._paq || [];
     _paq.push(['trackSiteSearch', "<%= params[:keywords] %>", false, <%= result_cnt %>]);
   });
 </script>
