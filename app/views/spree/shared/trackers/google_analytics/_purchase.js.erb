@@ -2,7 +2,6 @@
   <script>
     window.addEventListener('turbolinks:load', function() {
       if (typeof gtag !== 'undefined') {
-        clearGAplugins();
         gtag('event', 'purchase', {
           transaction_id: '<%= @order.number %>',
           value: <%= @order.total&.to_f %>,

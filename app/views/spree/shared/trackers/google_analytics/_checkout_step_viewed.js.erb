@@ -2,7 +2,6 @@
 <script >
 window.addEventListener('turbolinks:load', function () {
     if (typeof gtag !== 'undefined') {
-        clearGAplugins();
         <% if (@order.checkout_steps.index(@order.state) == 0) %>
         <%fa_event = 'begin_checkout' %>
         <% elsif (@order.checkout_steps.index(@order.state) == 1) %>

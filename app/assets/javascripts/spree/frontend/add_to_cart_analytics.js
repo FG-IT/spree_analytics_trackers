@@ -1,7 +1,6 @@
 //= require spree/frontend
 
 function gaAddToCart(variant, quantity, currency = 'USD') {
-    clearGAplugins();
     var price = typeof variant.price === 'object' ? variant.price.amount : variant.price
     gtag(
         'event',

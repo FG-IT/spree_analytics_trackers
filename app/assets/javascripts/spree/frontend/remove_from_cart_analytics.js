@@ -1,7 +1,6 @@
 //= require spree/frontend
 
 function gaRemoveFromCart(variant) {
-  clearGAplugins();
   gtag(
     'event',
     'remove_from_cart',
