@@ -1,0 +1,5 @@
+<% if defined?(em_enabled?) and em_enabled? %>
+<script>
+!function(){"use strict";function e(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}var t="ta_vtr",n="ta_vt";function r(r,o,a){var c,i={page_url:location.href,referrer:document.referrer},l={};l.context=i,o&&(l.assoc=o),a&&(l.event=a),l.tokens=(e(c={},t,localStorage.getItem(t)||""),e(c,n,localStorage.getItem(n)||""),c),l.tokens.app_id=r,fetch("<%= em_tracker.tracker_url %>",{method:"POST",mode:"cors",credentials:"include",headers:{"Content-Type":"text/plain"},body:JSON.stringify(l)}).then((function(e){return e.json()})).then((function(e){var r,o;r=e.ta_vt,o=e.ta_vtr,localStorage.setItem(n,r),localStorage.setItem(t,o)})).catch((function(e){console.log(e)}))}!function(e){r(e),document.addEventListener("turbolinks:request-end",(function(){r(e)}))}("<%= em_tracker.analytics_id %>")}();
+</script>
+<% end %>

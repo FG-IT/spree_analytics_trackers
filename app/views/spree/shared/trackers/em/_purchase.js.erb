@@ -1,0 +1,5 @@
+<% if defined?(em_enabled?) and em_enabled? %>
+<script>
+!function(){"use strict";function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}var t="ta_vtr",r="ta_vt";!function(n,o){var a,c,i,l,u,s;a=n,c={entity_type:"ORDER",entity_id:o},u={page_url:location.href,referrer:document.referrer},(s={}).context=u,c&&(s.assoc=c),i&&(s.event=i),s.tokens=(e(l={},t,localStorage.getItem(t)||""),e(l,r,localStorage.getItem(r)||""),l),s.tokens.app_id=a,fetch("<%= em_tracker.tracker_url %>",{method:"POST",mode:"cors",credentials:"include",headers:{"Content-Type":"text/plain"},body:JSON.stringify(s)}).then((function(e){return e.json()})).then((function(e){var n,o;n=e.ta_vt,o=e.ta_vtr,localStorage.setItem(r,n),localStorage.setItem(t,o)})).catch((function(e){console.log(e)}))}("<%= em_tracker.analytics_id %>",decodeURIComponent(location.pathname.split('/').pop()))}();
+</script>
+<% end %>

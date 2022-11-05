@@ -9,8 +9,7 @@ if (typeof gtag === 'undefined') {
 
 window.addEventListener('turbolinks:load', function () {
   let src = "https://www.googletagmanager.com/gtag/js?id=<%= ga_tracker.analytics_id %>";
-  let se = document.querySelector('script[src^="' + src + '"]');
-  if (!se) {
+  if (!isGTagExist()) {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.defer=true; g.src=src; s.parentNode.insertBefore(g,s);
 
@@ -30,6 +29,10 @@ function clearGAplugins() {
       }
     }
   }
+}
+
+function isGTagExist() {
+  return document.querySelector('script[src^="https://www.googletagmanager.com/gtag/js"]') !== null;
 }
 </script>
 <% end %>

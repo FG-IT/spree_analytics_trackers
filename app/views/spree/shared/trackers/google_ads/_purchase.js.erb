@@ -1,0 +1,75 @@
+<%
+if defined?(gads_enabled?) && gads_enabled? && @order.present?
+  google_ads_conversion_id = gads_tracker.analytics_id.include?('AW-') ? gads_tracker.analytics_id : "AW-#{gads_tracker.analytics_id}"
+  google_ads_conversion_label = gads_tracker.analytics_label
+  google_merchant_id = ENV.fetch('GOOGLE_MERCHANT_ID', nil)
+  order_id = @order.number
+  discount = @order.promo_total.to_f.abs
+  items = @order.line_items.map do |line_item|
+    product_id = line_item.variant.product_id
+    {
+      id: "#{current_store.code}_#{product_id}_#{line_item.variant_id}",
+      quantity: line_item.quantity,
+      price: line_item.price.to_f
+    }
+  end
+  order_currency = @order.currency
+  order_value = @order.total&.to_f
+  address = @order&.ship_address
+%>
+<script>
+window.addEventListener('turbolinks:load', function() {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'conversion', {
+      'send_to': '<%= google_ads_conversion_id %>/<%= google_ads_conversion_label %>',
+      'transaction_id': '<%= order_id %>',
+      'value': <%= order_value %>,
+      'currency': '<%= order_currency %>',
+      <!-- Start of CwCD Parameters -->
+      "discount": <%= discount %>,
+      <% if google_merchant_id.present? %>
+      "aw_merchant_id": <%= google_merchant_id %>,
+      <% end %>
+      "aw_feed_country": "US",
+      "aw_feed_language": "EN",
+      "items": <%= raw JSON.generate(items) %>
+      <!-- End of CwCD Parameters -->
+    });
+
+    gtag('event', 'order_complete', {
+      'order_id': "<%= order_id %>",
+      'order_value': <%= order_value %>,
+      'order_currency': "<%= order_currency %>",
+      'enhanced_conversion_data':  {
+        "email": "<%= @order.email %>",
+        "first_name": "<%= address&.firstname %>",
+        "last_name": "<%= address&.lastname %>",
+        "home_address": {
+          "street": "<%= address&.address1 %>",
+          "city": "<%= address&.city %>",
+          "region": "<%= address&.state_text %>",
+          "postal_code": "<%= address&.zipcode %>",
+          "country": "<%= address&.country&.iso&.to_s %>"
+        }
+      }
+    });
+
+    gtag('set', 'user_data', {
+      'email': "<%= @order.email %>",
+      <% unless address&.phone.blank? %>
+      'phone_number': "<%= address.phone %>",
+      <% end %>
+      'address': {
+        'first_name': "<%= address&.firstname %>",
+        'last_name': "<%= address&.lastname %>",
+        'street': "<%= address&.address1 %>",
+        'city': "<%= address&.city %>",
+        'region': "<%= address&.state_text %>",
+        'postal_code': "<%= address&.zipcode %>",
+        'country':  "<%= address&.country&.iso %>"
+      }
+    });
+  }
+});
+</script>
+<% end %>

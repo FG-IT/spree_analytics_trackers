@@ -36,6 +36,13 @@
       <%= collection_select(:tracker, :store_id, @stores, :id, :name, { include_blank: true }, {id: 'store_id', class: 'select2'}) %>
     </div>
   </div>
+  <div class="col-12 col-lg-6" data-hook="analytics_label">
+    <%= f.field_container :analytics_label, class: ["form-group"], "data-hook" => "analytics_label" do %>
+      <%= f.label :analytics_label, Spree.t(:analytics_label) %>
+      <%= f.text_field :analytics_label, class: 'form-control' %>
+      <%= f.error_message_on :analytics_label %>
+    <% end %>
+  </div>
   <div class="col-12 col-lg-6" data-hook="tracker_url">
     <%= f.field_container :tracker_url, class: ["form-group"], "data-hook" => "tracker_url" do %>
       <%= f.label :tracker_url, Spree.t(:tracker_url) %>
@@ -43,7 +50,6 @@
       <%= f.error_message_on :tracker_url %>
     <% end %>
   </div>
-  <div class="col-12 col-lg-6" data-hook="additional_tracker_fields"></div>
 </div>
 
 <div data-hook="admin_tracker_form_fields" class="row"></div>

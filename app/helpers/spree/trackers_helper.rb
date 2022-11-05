@@ -52,12 +52,8 @@ module Spree
 
       product_hash =
           {
-              id: begin
-                    variant.google_merchant_id rescue variant.id
-                  end,
-              item_id: begin
-                         variant.google_merchant_id rescue variant.id
-                       end,
+              id: variant.id,
+              item_id: "#{current_store.code}_#{variant.product_id}_#{variant.id}",
               # category: product.category&.name,
               item_name: product.name,
               # brand: product.brand&.name,
@@ -74,29 +70,17 @@ module Spree
     def ga_line_item(line_item)
       variant = line_item.variant
 
-      cache_key = [
-          'spree-ga-line-item',
-          I18n.locale,
-          current_currency,
-          line_item.cache_key_with_version,
-          variant.cache_key_with_version
-      ].compact.join('/')
-
-      Rails.cache.fetch(cache_key) do
-        product = line_item.product
-        {
-            id: begin
-                  variant.google_merchant_id rescue variant.id
-                end,
-            name: variant.name,
-            currency: current_currency,
-            # category: product.category&.name,
-            variant: variant.options_text,
-            # brand: product.brand&.name,
-            quantity: line_item.quantity,
-            price: variant.price_in(current_currency).amount&.to_f
-        }.to_json.html_safe
-      end
+      product = line_item.product
+      {
+        item_id: variant.id,
+        item_name: variant.name,
+        currency: line_item.currency,
+        item_brand: product&.main_brand,
+        # item_category: product.category&.name,
+        item_variant: variant.options_text,
+        quantity: line_item.quantity,
+        price: line_item.price
+      }.to_json.html_safe
     end
 
     def matomo_line_item(line_item)
@@ -159,7 +143,7 @@ module Spree
         name: variant.name,
         sku: variant.sku,
         quantity: line_item.quantity,
-        price: variant.price_in(current_currency).amount&.to_f
+        price: variant.price_in(line_item.currency).amount&.to_f
       }
     end
 
@@ -209,6 +193,22 @@ module Spree
 
     def fp_enabled?
       fp_tracker.present?
+    end
+
+    def gads_tracker
+      @gads_tracker ||= Spree::Tracker.current(:google_ads, current_store)
+    end
+
+    def gads_enabled?
+      gads_tracker.present?
+    end
+
+    def em_tracker
+      @em_tracker ||= Spree::Tracker.current(:em, current_store)
+    end
+
+    def em_enabled?
+      em_tracker.present?
     end
   end 
 end

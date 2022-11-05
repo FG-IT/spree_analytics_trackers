@@ -11,6 +11,7 @@ en:
     google_analytics: Google Analytics
     google_analytics_id: Analytics ID
     tracker_url: Tracker URL (Optional)
+    analytics_label: Analytics Label (Optional, if you use google ads conversion tracking, you can add conversion label here)
     analytics_desc_header_1: Spree Analytics
     analytics_desc_header_2: Live analytics integrated into your Spree dashboard
     analytics_desc_list_1: Get live sales information as it happens
