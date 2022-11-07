@@ -13,9 +13,8 @@ window.addEventListener('turbolinks:load', function () {
   if (!isGTagExist()) {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.defer=true; g.src=src; s.parentNode.insertBefore(g,s);
-
-    gtag('config', '<%= conversion_id %>', {'allow_enhanced_conversions': true});
   }
+  gtag('config', '<%= conversion_id %>', {'allow_enhanced_conversions': true});
 });
 
 function isGTagExist() {
