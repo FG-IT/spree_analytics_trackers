@@ -1,21 +1,25 @@
 <% if defined?(ga_enabled?) and ga_enabled? %>
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script>
+
+<script type="text/javascript" data-turbolinks-eval="false">
+/* Make sure gtag exists */
 if (typeof gtag === 'undefined') {
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 }
 
+gtag('js', new Date());
+gtag('config', '<%= ga_tracker.analytics_id %>', { 'send_page_view': false });
+gtag('set', 'allow_google_signals', true )
+gtag('set', 'allow_ad_personalization_signals', true );
+
+// Only execute load script once
 window.addEventListener('turbolinks:load', function () {
   let src = "https://www.googletagmanager.com/gtag/js?id=<%= ga_tracker.analytics_id %>";
   if (!isGTagExist()) {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.defer=true; g.src=src; s.parentNode.insertBefore(g,s);
   }
-  gtag('config', '<%= ga_tracker.analytics_id %>', { 'send_page_view': false });
-  gtag('set', 'allow_google_signals', true )
-  gtag('set', 'allow_ad_personalization_signals', true );
 });
 
 function clearGAplugins() {
@@ -34,4 +38,6 @@ function isGTagExist() {
   return document.querySelector('script[src^="https://www.googletagmanager.com/gtag/js"]') !== null;
 }
 </script>
+
+<!-- End Global site tag (gtag.js) - Google Analytics -->
 <% end %>

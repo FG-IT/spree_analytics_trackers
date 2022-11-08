@@ -1,15 +1,46 @@
 <% if defined?(ga_enabled?) && ga_enabled? && @product.present? %>
-<% variant = begin default_variant(@variants, @product) rescue @product end %>
-<script >
+<script type="text/javascript" data-turbolinks-eval="false">
 window.addEventListener('turbolinks:load', function () {
-    <% fa_product_price = @product.price %>
-    <% fa_event = 'view_item' %>
-    gtag('event', '<%= fa_event %>', {
-        'send_to': '<%= ga_tracker.analytics_id %>',
-        'value': <%= fa_product_price %>,
-        'currency': '<%=current_currency %>',
-        'items': [<%=product_for_ga(@product,variant) %>]
-    });
+  if (!PRODUCT_ID) {
+    return;
+  }
+
+  var cartForm = $('.add-to-cart-form');
+  if (cartForm.length <= 0) {
+    return;
+  }
+
+  var variant = null;
+  if (Spree) {
+    variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
+  } else {
+    var variantId = $('[name="variant_id"]').val();
+    var variants = JSON.parse(cartForm.attr('data-variants'));
+
+    variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
+  }
+
+  if (!variant) {
+    return;
+  }
+
+  var store_code = "<%= current_store.code %>";
+  var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
+  var price = parseFloat(variant.price);
+  gtag('event', 'view_item', {
+    'send_to': '<%= ga_tracker.analytics_id %>',
+    'value': price,
+    'currency': variant.currency,
+    'items': [{
+      id: variant.id,
+      item_id: [store_code, variant.product_id, variant.id].join('_'),
+      item_name: productSummary.name,
+      brand: productSummary.brand,
+      price: price,
+      quantity: 10,
+      currency: variant.currency
+    }]
+  });
 });
 </script>
 <% end %>
