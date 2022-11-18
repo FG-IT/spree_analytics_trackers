@@ -1,0 +1,35 @@
+<% if defined?(ob_enabled?) and ob_enabled? %>
+<% ob_adv_id = ob_tracker.analytics_id %>
+<!-- Outbrain Amplify Pixel Tracking -->
+<script data-obct type="text/javascript" data-turbolinks-eval="false">
+if (typeof obApi === 'undefined') {
+  var OB_ADV_ID = '<%= ob_adv_id %>';
+  var api = window.obApi = function() {
+    api.dispatch ? api.dispatch.apply(api, arguments) : api.queue.push(arguments);
+  };
+  api.version = '1.1';
+  api.loaded = true;
+  api.marketerId = OB_ADV_ID.replace(' ', '').split(',');
+  api.queue = [];
+}
+
+window.addEventListener('turbolinks:load', function () {
+  !function(_window, _document) {
+    src = '//amplify.outbrain.com/cp/obtp.js';
+    if (_document.querySelector('script[src^="' + src + '"]') !== null) {
+      return;
+    }
+
+    var tag = _document.createElement('script');
+    tag.defer = true;
+    tag.src = src;
+    tag.type = 'text/javascript';
+    var script = _document.getElementsByTagName('script')[0];
+    script.parentNode.insertBefore(tag, script);
+  }(window, document);
+});
+</script>
+
+<!-- End Outbrain Amplify Pixel Tracking -->
+
+<% end %>

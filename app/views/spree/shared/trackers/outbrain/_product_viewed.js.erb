@@ -1,0 +1,13 @@
+<% if defined?(ob_enabled?) && ob_enabled? && @product.present? %>
+<script type="text/javascript" data-turbolinks-eval="false">
+window.addEventListener('turbolinks:load', function () {
+  if (!PRODUCT_ID) {
+    return;
+  }
+
+  if (typeof obApi !== 'undefined') {
+    obApi('track', 'Content view');
+  }
+});
+</script>
+<% end %>

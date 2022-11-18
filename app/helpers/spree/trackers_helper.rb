@@ -210,5 +210,13 @@ module Spree
     def em_enabled?
       em_tracker.present?
     end
+
+    def ob_tracker
+      @ob_tracker ||= Spree::Tracker.current(:outbrain, current_store)
+    end
+
+    def ob_enabled?
+      ob_tracker.present?
+    end
   end 
 end

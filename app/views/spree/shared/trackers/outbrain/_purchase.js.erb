@@ -1,0 +1,13 @@
+<% if defined?(ob_enabled?) && ob_enabled? && @order.present? %>
+  <script data-obct type="text/javascript">
+    window.addEventListener('turbolinks:load', function() {
+      if (typeof obApi !== 'undefined') {
+        obApi('track', 'Purchase', {
+          orderId: '<%= @order.number %>',
+          orderValue: '<%= @order.total&.to_f %>',
+          currency: '<%= @order.currency %>'
+        });
+      }
+    });
+  </script>
+<% end %>

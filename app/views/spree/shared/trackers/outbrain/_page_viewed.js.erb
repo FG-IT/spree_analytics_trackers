@@ -1,0 +1,9 @@
+<% if defined?(ob_enabled?) && ob_enabled? %>
+<script data-obct type="text/javascript" data-turbolinks-eval="false">
+window.addEventListener('turbolinks:load', function () {
+  if (typeof obApi !== 'undefined') {
+    obApi('track', 'PAGE_VIEW');
+  }
+});
+</script>
+<% end %>

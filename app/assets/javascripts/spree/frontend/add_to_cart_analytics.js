@@ -53,6 +53,10 @@ function fpAddToCart(variant, quantity, currency = 'USD') {
     });
 }
 
+function obAddToCart(variant, quantity, currency = 'USD') {
+    obApi('track', 'Add to cart');
+}
+
 Spree.ready(function () {
     $('body').on('product_add_to_cart', function (event) {
         var variant = event.variant
@@ -69,6 +73,10 @@ Spree.ready(function () {
 
         if (typeof fbq !== 'undefined') {
             fpAddToCart(variant, quantity, currency)
+        }
+
+        if (typeof obApi !== 'undefined') {
+            obAddToCart(variant, quantity, currency)
         }
     })
 });
