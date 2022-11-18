@@ -26,3 +26,10 @@ Deface::Override.new(
     insert_bottom: '[data-hook="product_show"]',
     partial: 'spree/shared/trackers/outbrain/product_viewed.js'
 )
+
+Deface::Override.new(
+    virtual_path: 'spree/products/show',
+    name: 'add_kv_product_viewed_to_products_show',
+    insert_bottom: '[data-hook="product_show"]',
+    partial: 'spree/shared/trackers/klaviyo/product_viewed.js'
+)

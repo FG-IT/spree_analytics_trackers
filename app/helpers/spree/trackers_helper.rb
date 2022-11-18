@@ -218,5 +218,13 @@ module Spree
     def ob_enabled?
       ob_tracker.present?
     end
+
+    def kv_tracker
+      @kv_tracker ||= Spree::Tracker.current(:klaviyo, current_store)
+    end
+
+    def kv_enabled?
+      kv_tracker.present?
+    end
   end 
 end

@@ -1,0 +1,73 @@
+<% if defined?(kv_enabled?) && kv_enabled? %>
+<script type="text/javascript" data-turbolinks-eval="false">
+window.addEventListener('turbolinks:load', function () {
+  if (!PRODUCT_ID) {
+    return;
+  }
+
+  var cartForm = $('.add-to-cart-form');
+  if (cartForm.length <= 0) {
+    return;
+  }
+
+  var variant = null;
+  if (Spree) {
+    variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
+  } else {
+    var variantId = $('[name="variant_id"]').val();
+    var variants = JSON.parse(cartForm.attr('data-variants'));
+
+    variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
+  }
+
+  if (!variant) {
+    return;
+  }
+
+  var root_url = "<%= spree.root_url.delete_suffix('/') %>";
+  var store_code = "<%= current_store.code %>";
+  var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
+  var price = parseFloat(variant.price);
+  var image_url = null;
+  if (variant.images && variant.images.length > 0) {
+    image_url = variant.images[0]['url_product'];
+  } else if (productSummary.images && productSummary.images.length > 0) {
+    image_url = productSummary.images[0]['url_product'];
+  }
+
+  window._learnq = window._learnq || [];
+  var item = {
+    "ProductName": productSummary.name,
+    "ProductID": variant.product_id,
+    "SKU": variant.sku,
+    "ImageURL": image_url,
+    "URL": window.location.href,
+    "Brand": productSummary.brand,
+    "Price": price
+  };
+  _learnq.push(["track", "Viewed Product", item]);
+  console.log(item);
+
+  _learnq.push(["trackViewedItem", {
+    "Title": productSummary.name,
+    "ItemId": variant.product_id,
+    "ImageUrl": image_url,
+    "Url": window.location.href,
+    "Metadata": {
+      "Brand": productSummary.brand,
+      "Price": price,
+    }
+  }]);
+  console.log({
+    "Title": productSummary.name,
+    "ItemId": variant.product_id,
+    "ImageUrl": image_url,
+    "Url": window.location.href,
+    "Metadata": {
+      "Brand": productSummary.brand,
+      "Price": price,
+    }
+  });
+});
+</script>
+<% end %>

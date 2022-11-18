@@ -1,0 +1,15 @@
+<% if defined?(kv_enabled?) and kv_enabled? %>
+<% company_id = kv_tracker.analytics_id %>
+<!-- Klaviyo Tracking -->
+<script type="text/javascript" data-turbolinks-eval="false">
+window.addEventListener('load', function () {
+  let src = "//static.klaviyo.com/onsite/js/klaviyo.js?company_id=<%= company_id %>";
+  let se = document.querySelector('script[src^="' + src + '"]');
+  if (!se) {
+    var d=document, g=d.createElement('script'), s=d.querySelector('script');
+    g.defer=true; g.src=src; s.parentNode.insertBefore(g,s);
+  }
+});
+</script>
+<!-- End Klaviyo Tracking -->
+<% end %>
