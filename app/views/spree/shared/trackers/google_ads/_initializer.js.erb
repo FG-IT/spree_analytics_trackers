@@ -9,7 +9,7 @@ if (typeof gtag === 'undefined') {
 }
 
 gtag('js', new Date());
-gtag('config', '<%= conversion_id %>', {'allow_enhanced_conversions': true});
+gtag('config', '<%= conversion_id %>', {'allow_enhanced_conversions': true, 'groups': 'ads'});
 
 // Only execute load script once
 window.addEventListener('turbolinks:load', function () {

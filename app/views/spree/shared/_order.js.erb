@@ -1,0 +1,16 @@
+<% if @order.present? && !@order.completed? %>
+<% order_json = ::SpreeAnalyticsTrackers::OrderPresenter.new(@order).to_json %>
+<script type="text/javascript">
+window.order = <%= order_json.html_safe %>
+
+// let elem = document.querySelector('*[data-hook="checkout_content"]');
+// let event = new Event('checkout_proceed', {bubbles: true, order: <%= order_json.html_safe %>});
+// elem.dispatchEvent(event);
+</script>
+
+<script type="text/javascript" data-turbolinks-eval="false">
+window.addEventListener('turbolinks:load', function() {
+  $('*[data-hook="checkout_content"]').trigger('checkout_proceed', {order: window.order});
+});
+</script>
+<% end %>
