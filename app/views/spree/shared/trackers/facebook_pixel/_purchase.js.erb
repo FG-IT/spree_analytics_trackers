@@ -1,8 +1,8 @@
 <% if defined?(fp_enabled?) && fp_enabled? && @order.present? %>
 <% items = @order.line_items.map {|line_item| fp_line_item(line_item) } %>
-<script>
-  // window.addEventListener('turbolinks:load', function() {
-  window.addEventListener('load', function() {
+<script type="text/javascript">
+  window.addEventListener('turbolinks:load', function() {
+  // window.addEventListener('load', function() {
     if (typeof fbq !== 'undefined') {
       fbq('track', 'Purchase', {
         content_type: 'product',
