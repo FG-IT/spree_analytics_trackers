@@ -57,11 +57,22 @@ function obAddToCart(variant, quantity, currency = 'USD') {
     obApi('track', 'Add to cart');
 }
 
+function matomoAddToCart(variant, quantity, currency, cart) {
+    var variantPrice = parseFloat(variant.price);
+    _paq.push(['addEcommerceItem', variant.sku, variant.name, variant.category, variantPrice, quantity]);
+    _paq.push(['trackEcommerceCartUpdate', parseFloat(cart.item_total)]); 
+}
+
 Spree.ready(function () {
     $('body').on('product_add_to_cart', function (event) {
-        var variant = event.variant
-        var quantity = event.quantity_increment
-        var currency = event.cart.currency
+        var variant = event.variant;
+        var quantity = event.quantity_increment;
+        var currency = event.cart.currency;
+        var cart = event.cart;
+
+        if (typeof _paq !== 'undefined') {
+            matomoAddToCart(variant, quantity, currency, cart);
+        }
 
         if (typeof gtag !== 'undefined') {
             gaAddToCart(variant, quantity, currency)
