@@ -1,0 +1,213 @@
+<script>
+(()=>{
+  const ordersSourceChartId = 'ordersSourceChart';
+  const salesSourceChartId = 'salesSourceChart';
+  const deviceChartId = 'deviceChart';
+  const visitorTypeChartId = 'visitorTypeChart';
+
+  insertOrdersSourceChart();
+  insertSalesSourceChart();
+  insertDeviceChart();
+  insertVisitorTypeChart();
+
+  $('[data-toggle=tooltip]').tooltip();
+
+  const ordersSourceChartCtx = document.getElementById(ordersSourceChartId).getContext('2d');
+  let ordersSourceChart = null;
+
+  const salesSourceChartCtx = document.getElementById(salesSourceChartId).getContext('2d');
+  let salesSourceChart = null;
+
+  const deviceChartCtx = document.getElementById(deviceChartId).getContext('2d');
+  let deviceChart = null;
+
+  const visitorTypeChartCtx = document.getElementById(visitorTypeChartId).getContext('2d');
+  let visitorTypeChart = null;
+
+  
+  function insertDeviceChart() {
+    const topProductEle =  document.querySelector('#topProducts').closest('li')
+    const deviceEle = document.createElement("li");
+    deviceEle.className = topProductEle.className;
+    deviceEle.innerHTML = `
+      <div style="position: relative; height: 40vh; width: 75vw;">
+      <canvas id="${deviceChartId}">
+      </canvas>
+      </div>`
+    topProductEle.parentNode.insertBefore(deviceEle, topProductEle);
+  }
+
+  function insertVisitorTypeChart() {
+    const topProductEle =  document.querySelector('#topProducts').closest('li')
+    const visitorTypeEle = document.createElement("li");
+    visitorTypeEle.className = topProductEle.className;
+    visitorTypeEle.innerHTML = `
+      <div style="position: relative; height: 40vh; width: 75vw;">
+      <canvas id="${visitorTypeChartId}">
+      </canvas>
+      </div>`
+    topProductEle.parentNode.insertBefore(visitorTypeEle, topProductEle);
+  }
+
+  function insertOrdersSourceChart() {
+    const topProductEle =  document.querySelector('#topProducts').closest('li')
+    const ordersSourceEle = document.createElement("li");
+    ordersSourceEle.className = topProductEle.className;
+    ordersSourceEle.innerHTML = `
+      <div style="position: relative; height: 40vh; width: 75vw;">
+      <canvas id="${ordersSourceChartId}">
+      </canvas>
+      </div>`
+    topProductEle.parentNode.insertBefore(ordersSourceEle,topProductEle);
+  }
+
+  function insertSalesSourceChart() {
+    const topProductEle =  document.querySelector('#topProducts').closest('li')
+    const salesSourceEle = document.createElement("li");
+    salesSourceEle.className = topProductEle.className;
+    salesSourceEle.innerHTML = `
+      <div style="position: relative; height: 40vh; width: 75vw;">
+      <canvas id="${salesSourceChartId}">
+      </canvas>
+      </div>`
+    topProductEle.parentNode.insertBefore(salesSourceEle,topProductEle);
+  }
+
+  document.querySelector('#adminDashboard').addEventListener('update_dashboard', (e)=> {
+    const {startDate, endDate} = e.detail;
+    getAnalytics(startDate, endDate).then(({ordered, abandonedCart, devices, visitor_types}) => {
+      const [sourceOrders, sourceSales] = groupOrders(ordered, abandonedCart);
+      ordersSourceChart = drawChart(ordersSourceChart, ordersSourceChartCtx, sourceOrders, 'Orders by Traffic Source');
+      salesSourceChart = drawChart(salesSourceChart, salesSourceChartCtx, sourceSales, 'Sales by Traffic Source');
+
+      const [deviceOrders, deviceSales] = groupOrders(devices.ordered, devices.abandonedCart);
+      deviceChart = drawChart(deviceChart, deviceChartCtx, deviceOrders, 'Orders by Device')
+
+      const [visitorTypeOrders, visitorTypeSales] = groupOrders(visitor_types.ordered, visitor_types.abandonedCart);
+      visitorTypeChart = drawChart(visitorTypeChart, visitorTypeChartCtx, visitorTypeOrders, 'Orders by Vistor Type');
+    });
+  });
+
+  function getAnalytics(startDate, endDate) {
+    let url = '/admin/matomo-order-analytics?start_date=' + startDate + '&end_date=' + endDate;
+    return fetch(url).then(response => response.json());
+  }
+
+  function drawChart(chart, chartCtx, orders, title) {
+    if (chart != null) {
+      chart.destroy();
+    }
+
+    let datalabelsConfig = {
+      color: '#757575',
+      anchor: 'end',
+      clamp: true,
+      align: 'top',
+      offset: 0 
+    };
+
+    let c = calcOrders(orders);
+    
+    return new Chart(chartCtx, {
+      plugins: [ChartDataLabels],
+      type: 'bar',
+      data: {
+      labels: Object.keys(orders),
+      datasets: [
+          {
+            data: c.ordered,
+            label: 'Ordered (' + c.orderedTotal + ' / ' + c.orderedPercentStr + ')',
+            backgroundColor: [
+              'rgb(0, 161, 159)'
+            ],
+            datalabels: Object.assign({}, datalabelsConfig, {formatter: (value, context) => value.toLocaleString()  })
+          },
+          {
+            data: c.abandoned,
+            label: 'Abandoned (' + c.abandonedTotal + ' / ' + c.abandonedPercentStr + ')',
+            backgroundColor: [
+              'rgb(255, 111, 0)'
+            ],
+            datalabels: Object.assign({}, datalabelsConfig, {formatter: (value, context) => value.toLocaleString() })
+          }
+        ]
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        xAxis: [{
+          ticks: {
+            autoSkip: false
+          }
+        }],
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: title
+          },
+        }
+      }
+    });
+  }
+
+  function groupOrders(ordered, abandonedCart) {
+    var groupedOrders = {};
+    var groupedSales = {};
+    for (const [source, metrics] of Object.entries(ordered)) {
+      if (typeof groupedOrders[source] === 'undefined') {
+        groupedOrders[source] = {};
+      }
+      if (typeof groupedSales[source] === 'undefined') {
+        groupedSales[source] = {};
+      }
+
+      groupedOrders[source].ordered = metrics.orders;
+      groupedSales[source].ordered = metrics.sales;
+      groupedOrders[source].abandoned = 0;
+      groupedSales[source].abandoned = 0;
+    }
+    for (const [source, metrics] of Object.entries(abandonedCart)) {
+      if (typeof groupedOrders[source] === 'undefined') {
+        groupedOrders[source] = {};
+      }
+      if (typeof groupedSales[source] === 'undefined') {
+        groupedSales[source] = {};
+      }
+
+      groupedOrders[source].abandoned = metrics.orders;
+      groupedOrders[source].ordered ||= 0;
+      groupedSales[source].abandoned = metrics.sales;
+      groupedSales[source].ordered ||= 0;
+    }
+
+    return [groupedOrders, groupedSales];
+  }
+
+  function calcOrders(orders) {
+    let ordered = Object.values(orders).map( e => e.ordered );
+    let orderedTotal = ordered.reduce((partialSum, a) => partialSum + a, 0);
+    let abandoned = Object.values(orders).map( e => e.abandoned );
+    let abandonedTotal = abandoned.reduce((partialSum, a) => partialSum + a, 0);
+    let orderTotal = orderedTotal + abandonedTotal;
+    let orderedPercent = orderTotal > 0 ? Math.round(orderedTotal / orderTotal * 100) : 0;
+    let abandonedPercent = orderTotal > 0 ? Math.round(abandonedTotal / orderTotal * 100) : 0;
+    let orderedPercentStr = orderedPercent + '%';
+    let abandonedPercentStr = abandonedPercent + '%';
+
+    return {
+      ordered: ordered,
+      abandoned: abandoned,
+      orderedTotal: orderedTotal,
+      abandonedTotal: abandonedTotal,
+      orderTotal: orderTotal,
+      orderedPercent: orderedPercent,
+      orderedPercentStr: orderedPercentStr,
+      abandonedPercent: abandonedPercent,
+      abandonedPercentStr: abandonedPercentStr
+    };
+  }
+})()
+</script>
