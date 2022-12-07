@@ -12,35 +12,51 @@ module SpreeAnalyticsTrackers
       yesterday = ::Date.yesterday
       start_date = ::Date.parse(start_date_s)
       end_date = ::Date.parse(end_date_s)
-      if end_date > yesterday
-        analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', today_s, self::SEGMENT)
-        today_record = ::SpreeAnalyticsTrackers::MatomoAnalytics.new(tracker_id: tracker.id, date: today, data: JSON.generate(analytics))
-      else
-        today_record = nil
+      # if end_date > yesterday
+      #   analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', today_s, self::SEGMENT)
+      #   today_record = ::SpreeAnalyticsTrackers::MatomoAnalytics.new(tracker_id: tracker.id, date: today, data: JSON.generate(analytics))
+      # else
+      #   today_record = nil
+      # end
+      # if start_date > yesterday
+      #   today_record.blank? ? [] : [today_record]
+      # else
+      #   records = ::SpreeAnalyticsTrackers::MatomoAnalytics.where(tracker_id: tracker.id).where("date >= ? AND date <= ?", start_date.strftime('%F'), end_date.strftime('%F'))
+      #   records_by_date = Hash[ records.map {|r| [r.date.strftime('%F'), r] } ]
+
+      #   (start_date...end_date).each do |d|
+      #     d_s = d.strftime('%F')
+      #     next if records_by_date.has_key?(d_s)
+
+      #     analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', d_s, self::SEGMENT)
+
+      #     record = ::SpreeAnalyticsTrackers::MatomoAnalytics.create(tracker_id: tracker.id, date: d_s, data: JSON.generate(analytics))
+      #     records_by_date[d_s] = record
+      #   end
+      #   result = records_by_date.values.sort_by &:date
+      #   if end_date > yesterday && today_record.present?
+      #     result.append(today_record)
+      #   end
+
+      #   result
+      # end
+
+      start_date = yesterday if start_date > yesterday
+      end_date = yesterday if end_date > yesterday
+
+      records = ::SpreeAnalyticsTrackers::MatomoAnalytics.where(tracker_id: tracker.id).where("date >= ? AND date <= ?", start_date.strftime('%F'), end_date.strftime('%F'))
+      records_by_date = Hash[ records.map {|r| [r.date.strftime('%F'), r] } ]
+
+      (start_date...end_date).each do |d|
+        d_s = d.strftime('%F')
+        next if records_by_date.has_key?(d_s)
+
+        analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', d_s, self::SEGMENT)
+
+        record = ::SpreeAnalyticsTrackers::MatomoAnalytics.create(tracker_id: tracker.id, date: d_s, data: JSON.generate(analytics))
+        records_by_date[d_s] = record
       end
-
-      if start_date > yesterday
-        today_record.blank? ? [] : [today_record]
-      else
-        records = ::SpreeAnalyticsTrackers::MatomoAnalytics.where(tracker_id: tracker.id).where("date >= ? AND date <= ?", start_date.strftime('%F'), end_date.strftime('%F'))
-        records_by_date = Hash[ records.map {|r| [r.date.strftime('%F'), r] } ]
-
-        (start_date...end_date).each do |d|
-          d_s = d.strftime('%F')
-          next if records_by_date.has_key?(d_s)
-
-          analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', d_s, self::SEGMENT)
-
-          record = ::SpreeAnalyticsTrackers::MatomoAnalytics.create(tracker_id: tracker.id, date: d_s, data: JSON.generate(analytics))
-          records_by_date[d_s] = record
-        end
-        result = records_by_date.values.sort_by &:date
-        if end_date > yesterday && today_record.present?
-          result.append(today_record)
-        end
-
-        result
-      end
+      records_by_date.values.sort_by &:date
     end
 
     def self.calc_analytics(matomo_analytics)
@@ -61,6 +77,9 @@ module SpreeAnalyticsTrackers
               analytics[s][k] = v.clone
             end
           end
+          analytics[s].each do |k, item|
+            analytics[s][k][:sales] = item[:sales].round(2)
+          end
 
           data[:devices][s].each do |k, v|
             if analytics[:devices][s].has_key?(k)
@@ -75,6 +94,7 @@ module SpreeAnalyticsTrackers
               analytics[:devices][s][k] = v.clone
             end
           end
+          analytics[:devices][s].each {|k, item| analytics[:devices][s][k][:sales] = item[:sales].round(2) }
 
           data[:visitor_types][s].each do |k, v|
             if analytics[:visitor_types][s].has_key?(k)
@@ -89,6 +109,7 @@ module SpreeAnalyticsTrackers
               analytics[:visitor_types][s][k] = v.clone
             end
           end
+          analytics[:visitor_types][s].each {|k, item| analytics[:visitor_types][s][k][:sales] = item[:sales].round(2) }
         end
       end
 
