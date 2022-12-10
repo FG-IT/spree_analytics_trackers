@@ -1,0 +1,534 @@
+<% content_for :page_title do %>
+<%= Spree.t('Analytics') %>
+<% end %>
+<style type="text/css">
+  div.card-group div.card .arrow-icon-up svg { fill: green; }
+  div.card-group div.card .arrow-icon-down svg { fill: red; }
+  div.card-group div.card .arrow-icon {
+    display: block;
+    height: 1.25rem;
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+    width: 1.25rem;
+  }
+  div.card-group div.card-title span { font-size: 1.5em; font-weight: 500; height: 1.25rem; }
+</style>
+
+<div class="row">
+  <div class="col-6">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" id="analytics-date-range"></button>
+  </div>
+</div>
+
+<div class="card-group p-3">
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title" id="sales-summary">
+        <p class="card-text">Total Sales</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div><span class="sales-total"></span></div>
+          <div><span>-</span></div>
+          <!-- <div class="d-flex">
+            <span class="arrow-icon arrow-icon-up">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path d="M11 17v-11.586l3.293 3.293a.999.999 0 1 0 1.414-1.414l-5-5a.999.999 0 0 0-1.414 0l-5 5a.997.997 0 0 0 0 1.414.999.999 0 0 0 1.414 0l3.293-3.293v11.586a1 1 0 1 0 2 0z"></path></svg>
+            </span>
+            <span>114%</span>
+          </div> -->
+        </div>
+      </div>
+      <p class="card-text"><small class="text-muted">SALES OVER TIME</small></p>
+      <div class="card-text">
+        <canvas id="sales-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title" id="sessions-summary">
+        <p class="card-text">Sessions</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div><span class="sessions-total"></span></div>
+          <div><span>-</span></div>
+          <!-- <div class="d-flex">
+            <span class="arrow-icon arrow-icon-up">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path d="M11 17v-11.586l3.293 3.293a.999.999 0 1 0 1.414-1.414l-5-5a.999.999 0 0 0-1.414 0l-5 5a.997.997 0 0 0 0 1.414.999.999 0 0 0 1.414 0l3.293-3.293v11.586a1 1 0 1 0 2 0z"></path></svg>
+            </span>
+            <span>20%</span>
+          </div> -->
+        </div>
+      </div>
+      <p class="card-text"><small class="text-muted">SESSIONS OVER TIME</small></p>
+      <div class="card-text">
+        <canvas id="sessions-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title" id="returning-customer-rate-summary">
+        <p class="card-text">Returning customer rate</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div><span class="returning-customer-rate"></span></div>
+          <div><span>-</span></div>
+          <!-- <div class="d-flex">
+            <span class="arrow-icon arrow-icon-down">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path d="m10.707 17.707 5-5a.999.999 0 1 0-1.414-1.414l-3.293 3.293v-11.586a1 1 0 1 0-2 0v11.586l-3.293-3.293a.999.999 0 1 0-1.414 1.414l5 5a.999.999 0 0 0 1.414 0z"></path></svg>
+            </span>
+            <span>100%</span>
+          </div> -->
+        </div>
+      </div>
+      <p class="card-text"><small class="text-muted">CUSTOMERS OVER TIME</small></p>
+      <div class="card-text">
+        <canvas id="returning-customer-rate-chart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-group p-3">
+  <div class="card">
+    <div class="card-body" id="conversion-rate-wrapper">
+      <div class="card-title" id="conversion-rate-summary">
+        <p class="card-text">Conversion Rate</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div><span class="conversion-rate"></span></div>
+          <!-- <div class="d-flex">
+            <span class="arrow-icon arrow-icon-up">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path d="m10.707 17.707 5-5a.999.999 0 1 0-1.414-1.414l-3.293 3.293v-11.586a1 1 0 1 0-2 0v11.586l-3.293-3.293a.999.999 0 1 0-1.414 1.414l5 5a.999.999 0 0 0 1.414 0z"></path></svg>
+            </span>
+            <span>151%</span>
+          </div> -->
+        </div>
+      </div>
+
+      <p class="card-text"><small class="text-muted">CONVERSION FUNNEL</small></p>
+      <div class="d-flex justify-content-between align-items-center">
+        <div><span>New Visitor Conversion Rate</span></div>
+        <div><span class="conversion-rate-new"></span></div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div><span>Returing Visitor Conversion Rate</span></div>
+        <div><span class="conversion-rate-returning"></span></div>
+      </div>
+      <!-- <div class="d-flex justify-content-between align-items-center">
+        <div><span>Added to cart</span></div>
+        <div><span>2.46%</span></div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div><span>Sessions Converted</span></div>
+        <div><span>0.58%</span></div>
+      </div> -->
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title" id="avg-order-value-summary">
+        <p class="card-text">Average Order Value</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div><span class="avg-order-value"></span></div>
+          <div><span>-</span></div>
+          <!-- <div class="d-flex">
+            <span class="arrow-icon arrow-icon-up">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path d="M11 17v-11.586l3.293 3.293a.999.999 0 1 0 1.414-1.414l-5-5a.999.999 0 0 0-1.414 0l-5 5a.997.997 0 0 0 0 1.414.999.999 0 0 0 1.414 0l3.293-3.293v11.586a1 1 0 1 0 2 0z"></path></svg>
+            </span>
+            <span>5%</span>
+          </div> -->
+        </div>
+      </div>
+      <p class="card-text"><small class="text-muted">ORDER VALUE OVER TIME</small></p>
+      <div class="card-text">
+        <canvas id="avg-order-value-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title" id="total-orders-summary">
+        <p class="card-text">Total orders</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div><span class="order-total"></span></div>
+          <div><span>-</span></div>
+          <!-- <div class="d-flex">
+            <span class="arrow-icon arrow-icon-up">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path d="M11 17v-11.586l3.293 3.293a.999.999 0 1 0 1.414-1.414l-5-5a.999.999 0 0 0-1.414 0l-5 5a.997.997 0 0 0 0 1.414.999.999 0 0 0 1.414 0l3.293-3.293v11.586a1 1 0 1 0 2 0z"></path></svg>
+            </span>
+            <span>125%</span>
+          </div> -->
+        </div>
+      </div>
+      <p class="card-text"><small class="text-muted">ORDERS OVER TIME</small></p>
+      <div class="card-text">
+        <canvas id="orders-chart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-group p-3">
+  <div class="card">
+    <div class="card-body" id="traffic-source-sessions-wrapper">
+      <div class="card-title" id="traffic-source-sessions-summary">
+        <p class="card-text">Sessions by traffic source</p>
+      </div>
+
+      <div id="traffic-source-sessions"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body" id="traffic-source-sales-wrapper">
+      <div class="card-title" id="traffic-source-sales-summary">
+        <p class="card-text">Sales by traffic source</p>
+      </div>
+
+      <div id="traffic-source-sales"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body" id="location-sessions-wrapper">
+      <div class="card-title" id="location-sessions-summary">
+        <p class="card-text">Sessions by location</p>
+      </div>
+
+      <div id="location-sessions"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card-group p-3">
+  <div class="card">
+    <div class="card-body" id="social-source-sessions-wrapper">
+      <div class="card-title" id="social-source-sessions-summary">
+        <p class="card-text">Sessions by social source</p>
+      </div>
+
+      <div id="social-source-sessions"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body" id="social-source-sales-wrapper">
+      <div class="card-title" id="social-source-sales-summary">
+        <p class="card-text">Sales by social source</p>
+      </div>
+
+      <div id="social-source-sales"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body" id="device-type-sessions-wrapper">
+      <div class="card-title" id="device-type-sessions-summary">
+        <p class="card-text">Sessions by device type</p>
+      </div>
+
+      <div id="device-type-sessions"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  let start = moment().subtract(6, 'days');
+  let end = moment();
+  let startDate = start.format('YYYY-MM-DD');
+  let endDate = end.format('YYYY-MM-DD');
+
+  $('#analytics-date-range').html(startDate + ' - ' + endDate);
+  $('#analytics-date-range').daterangepicker({
+    startDate: start,
+    endDate: end,
+    ranges: {
+      'Today': [moment(), moment()],
+      'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+      'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+      'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+      'This Month': [moment().startOf('month'), moment().endOf('month')],
+      'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    }
+  });
+  $('#analytics-date-range').on('apply.daterangepicker', function(ev, picker) {
+    let startDate = picker.startDate.format('YYYY-MM-DD');
+    let endDate = picker.endDate.format('YYYY-MM-DD');
+    updateAnalytics(startDate, endDate);
+  });
+  updateAnalytics(startDate, endDate);
+});
+
+var charts = {
+  sales: {ctx: document.getElementById('sales-chart').getContext('2d'), chart: null},
+  sessions: {ctx: document.getElementById('sessions-chart').getContext('2d'), chart: null},
+  returningCustomerRate: {ctx: document.getElementById('returning-customer-rate-chart').getContext('2d'), chart: null},
+  avgOrderValue: {ctx: document.getElementById('avg-order-value-chart').getContext('2d'), chart: null},
+  orders: {ctx: document.getElementById('orders-chart').getContext('2d'), chart: null}
+};
+var chartOptions = {
+  maintainAspectRatio: false,
+  responsive: true,
+  xAxis: [{
+    ticks: {
+      autoSkip: false
+    }
+  }],
+  scales: {
+    yAxes: [
+      {
+        gridLines: {
+          display: true,
+          drawBorder: false,
+          color: "rgba(236, 242, 251, 0.68)",
+          zeroLineColor: "rgba(236, 242, 251, 0)",
+        },
+        ticks: {
+          beginAtZero: true,
+          fontColor: "#bababa",
+          fontSize: 9,
+          stepSize: 100,
+          callback: function (value, index, values) {
+            return value.toFixed();
+          },
+        },
+      },
+    ],
+
+    xAxes: [
+      {
+        display: true,
+        position: "bottom",
+        gridLines: {
+          drawBorder: false,
+          display: false,
+          drawTicks: false,
+        },
+        ticks: {
+          beginAtZero: true,
+          fontColor: "#bababa",
+          fontSize: 9,
+          stepSize: 100,
+        },
+      },
+    ],
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltips: {enabled: true}
+  },
+  elements: {
+    line: {
+      tension: 0.3,
+    },
+  },
+  tooltips: {
+    backgroundColor: "rgba(31, 59, 179, 1)",
+  },
+};
+
+function updateAnalytics(startDate, endDate) {
+  getSalesPerformance(startDate, endDate).then(({summary, details}) => {
+    let salesByDate = details;
+    let salesLabels = salesByDate.map((sales) => sales.date);
+
+    document.querySelector('#sales-summary span.sales-total').textContent = '$' + summary.revenue;
+    let revenues = salesByDate.map((sales) => sales.revenue);
+    drawChart('sales', salesLabels, revenues, 'Sales');
+
+    document.querySelector('#returning-customer-rate-summary span.returning-customer-rate').textContent = Math.round(summary.nb_conversions_returning_visit / summary.nb_conversions * 100) + '%';
+    let returningCustomerRates = salesByDate.map((sales) => {
+      return Math.round(sales.nb_conversions_returning_visit / sales.nb_conversions * 100)
+    });
+    drawChart('returningCustomerRate', salesLabels, returningCustomerRates, 'Returning Customer Rate');
+
+    document.querySelector('#conversion-rate-summary span.conversion-rate').textContent = summary.conversion_rate;
+    document.querySelector('span.conversion-rate-new').textContent = summary.conversion_rate_new_visit;
+    document.querySelector('span.conversion-rate-returning').textContent = summary.conversion_rate_returning_visit;
+
+    document.querySelector('#avg-order-value-summary span.avg-order-value').textContent = '$' + Math.round(summary.revenue / summary.nb_conversions * 100) / 100;
+    let avgOrderValues = salesByDate.map((sales) => {
+      return Math.round(sales.revenue / sales.nb_conversions * 100) / 100;
+    });
+    drawChart('avgOrderValue', salesLabels, avgOrderValues, 'Avg Order Value');
+
+    document.querySelector('#total-orders-summary span.order-total').textContent = summary.nb_conversions;
+    let ordersValues = salesByDate.map((sales) => {
+      return sales.nb_conversions;
+    });
+    drawChart('orders', salesLabels, ordersValues, 'Orders');
+  });
+
+  getVisitsSummary(startDate, endDate).then(({summary, details}) => {
+    let visitsByDate = details;
+    let visitsLabels = visitsByDate.map((visits) => visits.date);
+
+    document.querySelector('#sessions-summary span.sessions-total').textContent = summary.nb_visits;
+    let sessions = visitsByDate.map((visits) => visits.nb_visits);
+    drawChart('sessions', visitsLabels, sessions, 'Sessions');
+  });
+
+  getVisitsBySource(startDate, endDate).then((visitsBySources) => {
+    let trafficSourceSessionsElem = document.querySelector('#traffic-source-sessions');
+    let trafficSourceSalesElem = document.querySelector('#traffic-source-sales');
+
+    let sessionsTexts = [];
+    let salesTexts = [];
+    visitsBySources.forEach((visitsBySource) => {
+      let sessionsText = '<div class="d-flex justify-content-between align-items-center">';
+      sessionsText += '<div><span>' + visitsBySource.label + '</span></div>';
+      sessionsText += '<div><span>' + visitsBySource.nb_visits + '</span></div>';
+      sessionsText += '</div>'
+      sessionsTexts.push(sessionsText);
+
+      let salesText = '<div class="d-flex justify-content-between align-items-center">';
+      salesText += '<div><span>' + visitsBySource.label + '</span></div>';
+      salesText += '<div><span>$' + (visitsBySource.revenue ? visitsBySource.revenue : 0) + '</span></div>';
+      salesText += '</div>'
+      salesTexts.push(salesText);
+    });
+    trafficSourceSessionsElem.innerHTML = sessionsTexts.join('');
+    trafficSourceSalesElem.innerHTML = salesTexts.join('');
+  });
+
+  getVisitsBySocial(startDate, endDate).then((visitsBySocials) => {
+    let socialSourceSessionsElem = document.querySelector('#social-source-sessions');
+    let socialSourceSalesElem = document.querySelector('#social-source-sales');
+
+    let sessionsTexts = [];
+    let salesTexts = [];
+    visitsBySocials.forEach((visitsBySocial) => {
+      let sessionsText = '<div class="d-flex justify-content-between align-items-center">';
+      sessionsText += '<div><span>' + visitsBySocial.label + '</span></div>';
+      sessionsText += '<div><span>' + visitsBySocial.nb_visits + '</span></div>';
+      sessionsText += '</div>'
+      sessionsTexts.push(sessionsText);
+
+      let salesText = '<div class="d-flex justify-content-between align-items-center">';
+      salesText += '<div><span>' + visitsBySocial.label + '</span></div>';
+      salesText += '<div><span>$' + (visitsBySocial.revenue ? visitsBySocial.revenue : 0) + '</span></div>';
+      salesText += '</div>'
+      salesTexts.push(salesText);
+    });
+    socialSourceSessionsElem.innerHTML = sessionsTexts.join('');
+    socialSourceSalesElem.innerHTML = salesTexts.join('');
+  });
+
+  getVisitsByDevice(startDate, endDate).then((visitsByDevices) => {
+    let deviceTypeSessionsElem = document.querySelector('#device-type-sessions');
+
+    let sessionsTexts = [];
+    visitsByDevices.forEach((visitsByDevice) => {
+      if (visitsByDevice.revenue > 0) {
+        let sessionsText = '<div class="d-flex justify-content-between align-items-center">';
+        sessionsText += '<div><span>' + visitsByDevice.label + '</span></div>';
+        sessionsText += '<div><span>' + visitsByDevice.nb_visits + '</span></div>';
+        sessionsText += '<div><span>$' + (visitsByDevice.revenue ? visitsByDevice.revenue : 0) + '</span></div>';
+        sessionsText += '</div>'
+        sessionsTexts.push(sessionsText);
+      }
+    });
+    deviceTypeSessionsElem.innerHTML = sessionsTexts.join('');
+  });
+
+  getVisitsByRegions(startDate, endDate).then((visitsByRegions) => {
+    let locationSessionsElem = document.querySelector('#location-sessions');
+
+    let sessionsTexts = [];
+    visitsByRegions.forEach((visitsByRegion) => {
+      let sessionsText = '<div class="d-flex justify-content-between align-items-center">';
+      sessionsText += '<div><span>' + visitsByRegion.label + '</span></div>';
+      sessionsText += '<div><span>' + visitsByRegion.nb_visits + '</span></div>';
+      sessionsText += '<div><span>$' + (visitsByRegion.revenue ? visitsByRegion.revenue : 0) + '</span></div>';
+      sessionsText += '</div>'
+      sessionsTexts.push(sessionsText);
+    });
+    locationSessionsElem.innerHTML = sessionsTexts.join('');
+  });
+}
+
+function getSalesPerformance(startDate, endDate) {
+  let url = '/admin/matomo-sales-performance?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsSummary(startDate, endDate) {
+  let url = '/admin/matomo-visits-summary?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsBySource(startDate, endDate) {
+  let url = '/admin/matomo-visits-by-source?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsBySocial(startDate, endDate) {
+  let url = '/admin/matomo-visits-by-social?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsByWebsites(startDate, endDate) {
+  let url = '/admin/matomo-visits-by-websites?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsByDevice(startDate, endDate) {
+  let url = '/admin/matomo-visits-by-device?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsByCountries(startDate, endDate) {
+  let url = '/admin/matomo-visits-by-countries?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function getVisitsByRegions(startDate, endDate) {
+  let url = '/admin/matomo-visits-by-regions?start_date=' + startDate + '&end_date=' + endDate;
+  return fetch(url).then(response => response.json());
+}
+
+function drawChart(chartName, labels, values, label) {
+  if (typeof charts[chartName] === 'undefined') {
+    return;
+  }
+
+  chart = charts[chartName];
+  if (chart.chart) {
+    chart.chart.destroy();
+  }
+
+  let chartBg = chart.ctx.createLinearGradient(25, 0, 75, 150);
+  chartBg.addColorStop(0, "rgba(254, 255, 255, 0.33)");
+  chartBg.addColorStop(1, "rgba(174, 224, 221, 0.33)");
+  let data = {
+    labels: labels,
+    datasets: [
+      {
+        label: label,
+        data: values,
+        backgroundColor: chartBg,
+        borderColor: ["#04c9b7"],
+        borderWidth: 1,
+        fill: true, // 3: no fill
+        pointBorderWidth: 0,
+        pointRadius: [0, 0, 0, 0, 0],
+        pointHoverRadius: [0, 0, 0, 0, 0],
+        datalabels: {
+          color: '#757575',
+          anchor: 'end',
+          clamp: true,
+          align: 'top',
+          offset: 0 
+        }
+      },
+    ],
+  };
+
+  chart.chart = new Chart(chart.ctx, {plugins: [ChartDataLabels], type: 'line', data: data, options: chartOptions});
+}
+</script>
