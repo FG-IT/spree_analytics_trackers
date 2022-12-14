@@ -440,7 +440,11 @@ module SpreeAnalyticsTrackers
         Rails.logger.debug("[URL] #{action_detail&.fetch(:url, '')}")
 
         landing_url = action_detail.fetch(:url, '') || '' if action_detail.present?
-        landing_url = '' if landing_url.is_a?(Hash)
+        if landing_url.nil?
+          landing_url = ''
+        elsif landing_url.is_a?(Hash)
+          landing_url = ''
+        end
         if landing_url.match?(/srsltid=.*/)
           source = 'Google Free Traffic'
         elsif landing_url.match?(/(gclid=|wbraid=|gbraid=)/)
