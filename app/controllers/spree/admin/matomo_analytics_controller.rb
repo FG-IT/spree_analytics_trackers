@@ -12,6 +12,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         sales_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_sales_performance(matomo_tracker, matomo_tracker.analytics_id, 'day', "#{start_date_s},#{end_date_s}")
@@ -61,6 +63,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         visits_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_visits_summary(matomo_tracker, matomo_tracker.analytics_id, 'day', "#{start_date_s},#{end_date_s}")
@@ -100,6 +104,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         visits_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_visits_by_source(matomo_tracker, matomo_tracker.analytics_id, 'range', "#{start_date_s},#{end_date_s}")
@@ -114,6 +120,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         visits_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_visits_by_social(matomo_tracker, matomo_tracker.analytics_id, 'range', "#{start_date_s},#{end_date_s}")
@@ -128,6 +136,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         visits_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_visits_by_device(matomo_tracker, matomo_tracker.analytics_id, 'range', "#{start_date_s},#{end_date_s}")
@@ -156,6 +166,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         visits_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_visits_by_countries(matomo_tracker, matomo_tracker.analytics_id, 'range', "#{start_date_s},#{end_date_s}")
@@ -170,6 +182,8 @@ module Spree
 
         start_date = ::Date.parse(start_date_s)
         end_date = ::Date.parse(end_date_s)
+        today = ::Date.today
+        end_date = today if end_date > today
         days = (end_date - start_date).to_i
 
         visits_data = ::SpreeAnalyticsTrackers::MatomoAnalytics.get_visits_by_regions(matomo_tracker, matomo_tracker.analytics_id, 'range', "#{start_date_s},#{end_date_s}")
@@ -181,6 +195,11 @@ module Spree
       def order_analytics
         start_date_s = params[:start_date]
         end_date_s = params[:end_date]
+        today = ::Date.today
+        end_date = ::Date.parse(end_date_s)
+        end_date = today if end_date > today
+        end_date_s = end_date.strftime('%F')
+
         records = ::SpreeAnalyticsTrackers::MatomoAnalytics.fetch_matomo_analytics(matomo_tracker, start_date_s, end_date_s)
         analytics = ::SpreeAnalyticsTrackers::MatomoAnalytics.calc_analytics(records)
 

@@ -51,7 +51,8 @@ module SpreeAnalyticsTrackers
         d_s = d.strftime('%F')
         next if records_by_date.has_key?(d_s)
 
-        analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', d_s, self::SEGMENT)
+        segment = "#{self::SEGMENT};visitEndServerDate==#{d_s}"
+        analytics = self.get_visits_details(tracker, tracker.analytics_id, 'day', d_s, segment)
 
         record = ::SpreeAnalyticsTrackers::MatomoAnalytics.create(tracker_id: tracker.id, date: d_s, data: JSON.generate(analytics))
         records_by_date[d_s] = record
