@@ -13,6 +13,11 @@ function gaAddToCart(variant, quantity, currency = 'USD') {
                 category: variant.category,
                 variant: variant.options_text,
                 brand: variant.brand,
+                item_id: variant.id,
+                item_name: variant.name,
+                item_category: variant.category,
+                item_variant: variant.options_text,
+                item_brand: variant.brand,
                 price: price,
                 quantity: quantity
             }]

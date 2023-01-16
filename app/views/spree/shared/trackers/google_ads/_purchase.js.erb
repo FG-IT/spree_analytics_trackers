@@ -37,6 +37,7 @@ window.addEventListener('turbolinks:load', function() {
     });
 
     gtag('event', 'order_complete', {
+      'send_to': '<%= google_ads_conversion_id %>/<%= google_ads_conversion_label %>',
       'order_id': "<%= order_id %>",
       'order_value': <%= order_value %>,
       'order_currency': "<%= order_currency %>",
@@ -55,6 +56,7 @@ window.addEventListener('turbolinks:load', function() {
     });
 
     gtag('set', 'user_data', {
+      'send_to': '<%= google_ads_conversion_id %>/<%= google_ads_conversion_label %>',
       'email': "<%= @order.email %>",
       <% unless address&.phone.blank? %>
       'phone_number': "<%= address.phone %>",

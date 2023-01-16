@@ -1,8 +1,10 @@
-<% if defined?(ga_enabled?) && ga_enabled? && @order.present? %>
-  <script>
+<% if ((defined?(ga_enabled?) && ga_enabled?) || (defined?(ga4_enabled?) && ga4_enabled?)) && @order.present? %>
+  <script type="text/javascript">
     window.addEventListener('turbolinks:load', function() {
       if (typeof gtag !== 'undefined') {
+        <% if defined?(ga_enabled?) && ga_enabled? %>
         gtag('event', 'purchase', {
+          'send_to': '<%= ga_tracker.analytics_id %>',
           transaction_id: '<%= @order.number %>',
           value: <%= @order.total&.to_f %>,
           currency: '<%= @order.currency %>',
@@ -15,6 +17,24 @@
             <% end %>
           ]
         });
+        <% end %>
+
+        <% if defined?(ga4_enabled?) && ga4_enabled? %>
+        gtag('event', 'purchase', {
+          'send_to': '<%= ga4_tracker.analytics_id %>',
+          transaction_id: '<%= @order.number %>',
+          value: <%= @order.total&.to_f %>,
+          currency: '<%= @order.currency %>',
+          tax: <%= @order.tax_total&.to_f %>,
+          shipping: <%= @order.shipment_total&.to_f %>,
+          coupon: '<%= @order.promo_code %>',
+          items: [
+            <% @order.line_items.each do |line_item| %>
+              <%= ga4_line_item(line_item) %>,
+            <% end %>
+          ]
+        });
+        <% end %>
       }
     });
   </script>

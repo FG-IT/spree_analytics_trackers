@@ -1,5 +1,5 @@
-<% if defined?(ga_enabled?) && ga_enabled? && @order.present? && !@order.completed? %>
-<script >
+<% if ((defined?(ga_enabled?) && ga_enabled?) || (defined?(ga4_enabled?) && ga4_enabled?)) && @order.present? && !@order.completed? %>
+<script type="text/javascript">
 window.addEventListener('turbolinks:load', function () {
     if (typeof gtag !== 'undefined') {
         <% if (@order.checkout_steps.index(@order.state) == 0) %>
@@ -9,6 +9,8 @@ window.addEventListener('turbolinks:load', function () {
         <% elsif (@order.checkout_steps.index(@order.state) == 2) %>
         <%fa_event = 'add_payment_info' %>
         <%end %>
+
+        <% if defined?(ga_enabled?) && ga_enabled? %>
         gtag('event', '<%=fa_event %>', {
             send_to: '<%= ga_tracker.analytics_id %>',
             currency: '<%= @order.currency %>',
@@ -20,8 +22,22 @@ window.addEventListener('turbolinks:load', function () {
             coupon: '<%= @order.promo_code %>',
             checkout_option: '<%= @order.state %>'
         });
+        <% end %>
+
+        <% if defined?(ga4_enabled?) && ga4_enabled? %>
+        gtag('event', '<%=fa_event %>', {
+            send_to: '<%= ga4_tracker.analytics_id %>',
+            currency: '<%= @order.currency %>',
+            items: [
+                <% @order.line_items.each do |line_item| %>
+                <%= ga4_line_item(line_item) %>,
+                <% end %>
+            ],
+            coupon: '<%= @order.promo_code %>',
+            checkout_option: '<%= @order.state %>'
+        });
+        <% end %>
     }
-    ;
 });
 </script>
 <% end %>

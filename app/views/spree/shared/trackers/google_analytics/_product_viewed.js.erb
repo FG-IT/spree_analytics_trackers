@@ -1,4 +1,4 @@
-<% if defined?(ga_enabled?) && ga_enabled? %>
+<% if (defined?(ga_enabled?) && ga_enabled?) || (defined?(ga4_enabled?) && ga4_enabled?) %>
 <script type="text/javascript" data-turbolinks-eval="false">
 window.addEventListener('turbolinks:load', function () {
   if (!PRODUCT_ID) {
@@ -27,20 +27,35 @@ window.addEventListener('turbolinks:load', function () {
   var store_code = "<%= current_store.code %>";
   var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
   var price = parseFloat(variant.price);
+  <% if defined?(ga_enabled?) && ga_enabled? %>
   gtag('event', 'view_item', {
     'send_to': '<%= ga_tracker.analytics_id %>',
     'value': price,
     'currency': variant.currency,
     'items': [{
-      id: variant.id,
-      item_id: [store_code, variant.product_id, variant.id].join('_'),
-      item_name: productSummary.name,
+      id: [store_code, variant.product_id, variant.id].join('_'),
+      name: productSummary.name,
       brand: productSummary.brand,
       price: price,
       quantity: 10,
-      currency: variant.currency
     }]
   });
+  <% end %>
+
+  <% if defined?(ga4_enabled?) && ga4_enabled? %>
+  gtag('event', 'view_item', {
+    'send_to': '<%= ga4_tracker.analytics_id %>',
+    'value': price,
+    'currency': variant.currency,
+    'items': [{
+      item_id: [store_code, variant.product_id, variant.id].join('_'),
+      item_name: productSummary.name,
+      item_brand: productSummary.brand,
+      price: price,
+      quantity: 10,
+    }]
+  });
+  <% end %>
 });
 </script>
 <% end %>

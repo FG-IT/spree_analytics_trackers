@@ -1,4 +1,4 @@
-<% if defined?(gads_enabled?) and gads_enabled? %>
+<% if defined?(gads_enabled?) && gads_enabled? %>
 <% conversion_id = gads_tracker.analytics_id.include?('AW-') ? gads_tracker.analytics_id : "AW-#{gads_tracker.analytics_id}" %>
 <!-- Google Ads Conversion Tracking -->
 <script type="text/javascript" data-turbolinks-eval="false">

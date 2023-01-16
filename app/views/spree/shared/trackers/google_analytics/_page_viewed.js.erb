@@ -1,4 +1,4 @@
-<% if defined?(ga_enabled?) && ga_enabled? %>
+<% if (defined?(ga_enabled?) && ga_enabled?) || (defined?(ga4_enabled?) && ga4_enabled?) %>
 <script type="text/javascript" data-turbolinks-eval="false">
 window.addEventListener('turbolinks:load', function () {
   if (typeof gtag !== 'undefined') {
@@ -9,7 +9,8 @@ window.addEventListener('turbolinks:load', function () {
 
 <% if controller_name == 'orders' and action_name == 'edit' %>
 <% fa_event = 'view_cart' %>
-<script>
+<% if defined?(ga_enabled?) && ga_enabled? %>
+<script type="text/javascript">
 if (typeof gtag !== 'undefined') {
   gtag('event', '<%= fa_event %>', {
       'send_to': '<%= ga_tracker.analytics_id %>',
@@ -32,4 +33,31 @@ if (typeof gtag !== 'undefined') {
 }
 </script>
 <% end %>
+
+<% if defined?(ga4_enabled?) && ga4_enabled? %>
+<script type="text/javascript">
+if (typeof gtag !== 'undefined') {
+  gtag('event', '<%= fa_event %>', {
+      'send_to': '<%= ga4_tracker.analytics_id %>',
+      'currency': '<%=current_currency %>',
+      'value': '<%= @order&.total&.to_f || 0 %>',
+      <% if @order %>
+      'items': [
+          <% @order.line_items&.each do |item| %>
+          {
+              'item_id': '<%= item.variant_id %>',
+              'item_name': '<%= item.product.name %>',
+              'price': '<%= item.price %>',
+              'quantity': '<%= item.quantity %>',
+          },
+          <% end %>
+      ],
+      <% end %>
+  });
+}
+</script>
+<% end %>
+
+<% end %>
+
 <% end %>

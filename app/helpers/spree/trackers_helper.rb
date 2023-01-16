@@ -66,8 +66,23 @@ module Spree
       product_hash.to_json.html_safe
     end
 
-
     def ga_line_item(line_item)
+      variant = line_item.variant
+
+      product = line_item.product
+      {
+        id: variant.id,
+        name: variant.name,
+        currency: line_item.currency,
+        brand: product&.main_brand,
+        # category: product.category&.name,
+        variant: variant.options_text,
+        quantity: line_item.quantity,
+        price: line_item.price
+      }.to_json.html_safe
+    end
+
+    def ga4_line_item(line_item)
       variant = line_item.variant
 
       product = line_item.product
@@ -177,6 +192,14 @@ module Spree
 
     def ga_enabled?
       ga_tracker.present?
+    end
+
+    def ga4_tracker
+      @ga4_tracker ||= Spree::Tracker.current(:GA4, current_store)
+    end
+
+    def ga4_enabled?
+      ga4_tracker.present?
     end
 
     def matomo_tracker

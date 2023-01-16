@@ -14,7 +14,6 @@ function gaCheckout(order) {
   }
 
   gtag('event', event, {
-    send_to: 'analytics',
     value: order.total,
     currency: order.currency,
     coupon: order.coupon,
