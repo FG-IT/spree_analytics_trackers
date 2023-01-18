@@ -1,4 +1,4 @@
-<% if defined?(fp_enabled?) && fp_enabled? && @order.present? %>
+<% if defined?(fp_enabled?) && fp_enabled? && @order.present? && order_just_completed?(@order) %>
 <% items = @order.line_items.map {|line_item| fp_line_item(line_item) } %>
 <script type="text/javascript">
   window.addEventListener('turbolinks:load', function() {
