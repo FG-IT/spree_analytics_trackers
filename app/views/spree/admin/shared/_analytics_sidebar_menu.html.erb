@@ -1,3 +1,5 @@
+<% if try_spree_current_user.present? && try_spree_current_user.respond_to?(:has_spree_role?) && try_spree_current_user.has_spree_role?('admin') %>
 <%= configurations_sidebar_menu_item(
     Spree.t(:analytics), spree.admin_trackers_path
   ) if can? :manage, Spree::Config %>
+<% end %>

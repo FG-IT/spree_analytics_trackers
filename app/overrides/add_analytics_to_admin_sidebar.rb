@@ -11,9 +11,11 @@ if Gem.loaded_specs['spree_core'].version >= Gem::Version.create('3.5.0')
     name: 'Matomo Analytics',
     insert_bottom: 'nav',
     text: <<-HTML
+      <% if try_spree_current_user.present? && try_spree_current_user.respond_to?(:has_spree_role?) && try_spree_current_user.has_spree_role?('admin') %>
       <ul class="nav nav-sidebar border-bottom" id="sidebarAnalytics">
         <%= tab Spree.t(:analytics), icon: "report.svg", route: :admin_matomo_analytics %>
       </ul>
+      <% end %>
     HTML
   )
 end

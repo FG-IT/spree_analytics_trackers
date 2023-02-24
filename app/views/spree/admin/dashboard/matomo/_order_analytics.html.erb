@@ -1,3 +1,4 @@
+<% if try_spree_current_user.present? && try_spree_current_user.respond_to?(:has_spree_role?) && try_spree_current_user.has_spree_role?('admin') %>
 <script>
 (()=>{
   const ordersSourceChartId = 'ordersSourceChart';
@@ -211,3 +212,4 @@
   }
 })()
 </script>
+<% end %>
