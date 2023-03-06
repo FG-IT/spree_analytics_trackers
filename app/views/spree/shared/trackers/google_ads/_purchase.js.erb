@@ -2,6 +2,7 @@
 if defined?(gads_enabled?) && gads_enabled? && @order.present?
   google_ads_conversion_id = gads_tracker.analytics_id.include?('AW-') ? gads_tracker.analytics_id : "AW-#{gads_tracker.analytics_id}"
   google_ads_conversion_label = gads_tracker.analytics_label
+  conversion_id = "#{google_ads_conversion_id}/#{google_ads_conversion_label}"
   google_merchant_id = ENV.fetch('GOOGLE_MERCHANT_ID', nil)
   order_id = @order.number
   discount = @order.promo_total.to_f.abs
@@ -20,8 +21,10 @@ if defined?(gads_enabled?) && gads_enabled? && @order.present?
 <script>
 window.addEventListener('turbolinks:load', function() {
   if (typeof gtag !== 'undefined') {
+    gtag('config', '<%= conversion_id %>', {'allow_enhanced_conversions': true});
+
     gtag('event', 'conversion', {
-      'send_to': '<%= google_ads_conversion_id %>/<%= google_ads_conversion_label %>',
+      'send_to': '<%= conversion_id %>',
       'transaction_id': '<%= order_id %>',
       'value': <%= order_value %>,
       'currency': '<%= order_currency %>',
@@ -37,7 +40,7 @@ window.addEventListener('turbolinks:load', function() {
     });
 
     gtag('event', 'order_complete', {
-      'send_to': '<%= google_ads_conversion_id %>/<%= google_ads_conversion_label %>',
+      'send_to': '<%= conversion_id %>',
       'order_id': "<%= order_id %>",
       'order_value': <%= order_value %>,
       'order_currency': "<%= order_currency %>",
@@ -56,7 +59,7 @@ window.addEventListener('turbolinks:load', function() {
     });
 
     gtag('set', 'user_data', {
-      'send_to': '<%= google_ads_conversion_id %>/<%= google_ads_conversion_label %>',
+      'send_to': '<%= conversion_id %>',
       'email': "<%= @order.email %>",
       <% unless address&.phone.blank? %>
       'phone_number': "<%= address.phone %>",
