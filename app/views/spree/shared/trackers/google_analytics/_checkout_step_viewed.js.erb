@@ -13,6 +13,7 @@ window.addEventListener('turbolinks:load', function () {
         <% if defined?(ga_enabled?) && ga_enabled? %>
         gtag('event', '<%=fa_event %>', {
             send_to: '<%= ga_tracker.analytics_id %>',
+            value: <%= @order.total %>,
             currency: '<%= @order.currency %>',
             items: [
                 <% @order.line_items.each do |line_item| %>
@@ -27,6 +28,7 @@ window.addEventListener('turbolinks:load', function () {
         <% if defined?(ga4_enabled?) && ga4_enabled? %>
         gtag('event', '<%=fa_event %>', {
             send_to: '<%= ga4_tracker.analytics_id %>',
+            value: <%= @order.total %>,
             currency: '<%= @order.currency %>',
             items: [
                 <% @order.line_items.each do |line_item| %>

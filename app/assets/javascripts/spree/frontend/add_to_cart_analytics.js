@@ -6,6 +6,7 @@ function gaAddToCart(variant, quantity, currency = 'USD') {
         'event',
         'add_to_cart',
         {
+            value: price * quantity,
             currency: currency,
             items: [{
                 id: variant.id,
@@ -13,6 +14,19 @@ function gaAddToCart(variant, quantity, currency = 'USD') {
                 category: variant.category,
                 variant: variant.options_text,
                 brand: variant.brand,
+                price: price,
+                quantity: quantity
+            }]
+        }
+    );
+
+    gtag(
+        'event',
+        'add_to_cart',
+        {
+            value: price * quantity,
+            currency: currency,
+            items: [{
                 item_id: variant.id,
                 item_name: variant.name,
                 item_category: variant.category,
