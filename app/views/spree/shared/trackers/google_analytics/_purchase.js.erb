@@ -1,5 +1,6 @@
 <% if ((defined?(ga_enabled?) && ga_enabled?) || (defined?(ga4_enabled?) && ga4_enabled?)) && @order.present? %>
-  <script type="text/javascript">
+<% if order_just_completed?(@order) %>
+<script type="text/javascript">
     window.addEventListener('turbolinks:load', function() {
       if (typeof gtag !== 'undefined') {
         <% if defined?(ga_enabled?) && ga_enabled? %>
@@ -38,4 +39,5 @@
       }
     });
   </script>
+<% end %>
 <% end %>
