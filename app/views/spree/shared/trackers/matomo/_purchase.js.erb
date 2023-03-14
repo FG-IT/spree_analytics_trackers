@@ -1,4 +1,5 @@
 <% if defined?(matomo_enabled?) && matomo_enabled? && @order.present? %>
+<% if order_just_completed?(@order) %>
 <script>
   window.addEventListener('turbolinks:load', function() {
     var _paq = window._paq = window._paq || [];
@@ -17,4 +18,5 @@
     _paq.push(['trackEcommerceOrder', "<%= @order.number %>", <%= revenue %>, <%= revenue - shipping %>, <%= tax %>, <%= shipping %>, <%= discount %>]);
   });
 </script>
+<% end %>
 <% end %>
