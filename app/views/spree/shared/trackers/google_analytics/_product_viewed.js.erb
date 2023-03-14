@@ -25,15 +25,17 @@ window.addEventListener('turbolinks:load', function () {
   }
 
   var store_code = "<%= current_store.code %>";
+  var current_country = "<%= current_country || "US" %>";
   var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
   var price = parseFloat(variant.price);
+  var item_id =  [store_code,current_country, PRODUCT_ID, variant.id].join('_')
   <% if defined?(ga_enabled?) && ga_enabled? %>
   gtag('event', 'view_item', {
     'send_to': '<%= ga_tracker.analytics_id %>',
     'value': price,
     'currency': variant.currency,
     'items': [{
-      id: [store_code, variant.product_id, variant.id].join('_'),
+      id: item_id,
       name: productSummary.name,
       brand: productSummary.brand,
       price: price,
@@ -48,7 +50,7 @@ window.addEventListener('turbolinks:load', function () {
     'value': price,
     'currency': variant.currency,
     'items': [{
-      item_id: [store_code, variant.product_id, variant.id].join('_'),
+      item_id: item_id,
       item_name: productSummary.name,
       item_brand: productSummary.brand,
       price: price,
@@ -56,6 +58,29 @@ window.addEventListener('turbolinks:load', function () {
     }]
   });
   <% end %>
+
+  <%
+if defined?(gads_enabled?) && gads_enabled?
+  google_ads_conversion_id = gads_tracker.analytics_id.include?('AW-') ? gads_tracker.analytics_id : "AW-#{gads_tracker.analytics_id}"
+%>
+
+  gtag('event', 'view_item', {
+    'send_to': '<%= google_ads_conversion_id %>',
+    'value': price,
+    'currency': variant.currency,
+      'items': [{
+      item_id: item_id,
+      item_name: productSummary.name,
+      item_brand: productSummary.brand,
+      price: price,
+      quantity: 10,
+    }]
+  });
+
+  <% end %>
+
+  //console.log(item_id)
 });
+
 </script>
 <% end %>
