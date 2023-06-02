@@ -4,30 +4,30 @@ window.addEventListener('turbolinks:load', function () {
 // window.addEventListener('load', function () {
     if (typeof fbq !== 'undefined') {
         var prefix = '<%= current_store.code  %>';
-        var productId = '<%= @product.id %>';
         var variant = null;
         var cartForm = $('.add-to-cart-form');
-        if (cartForm.length > 0) {
-            var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
-            if (Spree) {
-                variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
-            } else {
-                var variantId = $('[name="variant_id"]').val();
-                var variants = JSON.parse(cartForm.attr('data-variants'));
+        if (cartForm.length <= 0) {
+            return;
+        }
 
-                variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
-            }
-            if (variant) {
-                var contentId = [prefix, productId, variant.id].join('_');
-                fbq('track', 'ViewContent', {
-                    content_type: 'product',
-                    content_ids: [contentId],
-                    content_name: productSummary.name,
-                    contents: [{id: variant.id, quantity: 1}],
-                    currency: variant.currency,
-                    value: variant.price
-                });
-            }
+        var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
+        var variants = JSON.parse(cartForm.attr('data-variants'));
+        if (Spree) {
+            variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
+        } else {
+            var variantId = $('[name="variant_id"]').val();
+            variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
+        }
+        if (variant) {
+            var contentId = [prefix, variant.product_id, variant.id].join('_');
+            fbq('track', 'ViewContent', {
+                content_type: 'product',
+                content_ids: [contentId],
+                content_name: productSummary.name,
+                contents: [{id: variant.id, quantity: 1}],
+                currency: variant.currency,
+                value: variant.price
+            });
         }
     }
 });
