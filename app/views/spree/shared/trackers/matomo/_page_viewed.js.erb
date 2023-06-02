@@ -16,7 +16,7 @@
       _paq.push(['setUserId', "<%= user_id %>"]);
       <% end %>
 
-      console.log('PRODUCT_ID: ' + PRODUCT_ID);
+      //console.log('PRODUCT_ID: ' + PRODUCT_ID);
       if (PRODUCT_ID) {
         var variant = null;
         var cartForm = $('.add-to-cart-form');
@@ -36,9 +36,9 @@
 
             variant = variants.find(function(variant) { return variant.id.toString() === variantId; }) || null;
           }
-          console.log(productSummary);
-          console.log(breadcrumbs);
-          console.log(variant);
+          //console.log(productSummary);
+          //console.log(breadcrumbs);
+          //.log(variant);
           if (variant) {
             // Push Product View Data to Matomo - Populate parameters dynamically
             _paq.push(['setEcommerceView', variant.sku, productSummary.name, breadcrumbs, variant.price]);

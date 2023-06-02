@@ -18,6 +18,7 @@ if defined?(gads_enabled?) && gads_enabled? && @order.present?
   order_value = @order.total&.to_f
   address = @order&.ship_address
 %>
+<% if order_just_completed?(@order) %>
 <script>
 window.addEventListener('turbolinks:load', function() {
   if (typeof gtag !== 'undefined') {
@@ -77,4 +78,5 @@ window.addEventListener('turbolinks:load', function() {
   }
 });
 </script>
+<% end %>
 <% end %>
