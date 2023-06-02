@@ -25,7 +25,7 @@ window.addEventListener('turbolinks:load', function () {
   }
 
   var store_code = "<%= current_store.code %>";
-  var current_country = "<%= current_country || "US" %>";
+  var current_country = "<%= (defined?(current_country) && current_country) || "US" %>";
   var productSummary = JSON.parse(cartForm.attr('data-product-summary'));
   var price = parseFloat(variant.price);
   var item_id =  [store_code,current_country, PRODUCT_ID, variant.id].join('_')
