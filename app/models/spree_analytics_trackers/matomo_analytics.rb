@@ -409,6 +409,8 @@ module SpreeAnalyticsTrackers
           source = 'Outbrain'
         elsif campaign_source == 'klaviyo'
           source = 'Klaviyo'
+        elsif campaign_source == 'bing'
+          source = 'Bing Ads'
         elsif campaign_source.present?
           source = campaign_source
         end
@@ -426,6 +428,8 @@ module SpreeAnalyticsTrackers
           source = 'Google Ads'
         elsif provider_id == 'facebook'
           source = 'Facebook Ads'
+        elsif provider_id == 'bing'
+          source = 'Bing Ads'
         elsif provider_id.present?
           source = provider_id
         end
@@ -458,7 +462,15 @@ module SpreeAnalyticsTrackers
           source = 'ShareASale'
         elsif landing_url.match?(/cjevent=.*/)
           source = 'CJ Affiliate'
+        elsif landing_url.match?(/msclkid=.*/)
+          source = 'Bing Ads'
         end
+
+        referrer_name = visit_details[:referrerName]&.downcase || '' if visit_details[:referrerName].present?
+        if referrer_name&.include?('bing')
+          source = 'Bing Ads'
+        end
+
         if source.present?
           base[:source] = source
           orders << base
