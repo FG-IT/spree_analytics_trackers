@@ -10,6 +10,10 @@ window.addEventListener('turbolinks:load', function () {
     return;
   }
 
+  if (typeof klaviyo === 'undefined') {
+    return;
+  }
+
   var variant = null;
   if (Spree) {
     variant = Spree.variantById($(ADD_TO_CART_FORM_SELECTOR), $(VARIANT_ID_SELECTOR).val());
@@ -35,7 +39,6 @@ window.addEventListener('turbolinks:load', function () {
     image_url = productSummary.images[0]['url_product'];
   }
 
-  window._learnq = window._learnq || [];
   var item = {
     "ProductName": productSummary.name,
     "ProductID": variant.product_id,
@@ -45,9 +48,9 @@ window.addEventListener('turbolinks:load', function () {
     "Brand": productSummary.brand,
     "Price": price
   };
-  _learnq.push(["track", "Viewed Product", item]);
+  klaviyo.push(["track", "Viewed Product", item]);
 
-  _learnq.push(["trackViewedItem", {
+  klaviyo.push(["trackViewedItem", {
     "Title": productSummary.name,
     "ItemId": variant.product_id,
     "ImageUrl": image_url,
