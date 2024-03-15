@@ -1,0 +1,204 @@
+<script type="text/javascript">
+var retailApiEventTracked = false;
+(function(){
+  
+  var RetailApi = {
+    _loadScript: function(){
+      var id = 'retail-api-js';
+      var existing = document.querySelector(`#${id}`)
+      if (existing) {
+        existing.remove();
+      }
+      var gre = document.createElement('script'); 
+      gre.type = 'text/javascript'; 
+      gre.id = id;
+      gre.async = true;
+      gre.src = 'https://www.gstatic.com/retail/v2_event.js';
+      var s = document.getElementsByTagName('script')[0]; 
+      s.parentNode.insertBefore(gre, s);
+    },
+
+    track: function(userEvent, multipleTrigger = false) {
+      if (multipleTrigger || !retailApiEventTracked) {
+        retailApiEventTracked = true;
+        RetailApi._getVisitorId(function(visitorId) {
+          var _userEvent = {
+            visitorId,
+            ...userEvent
+          }
+          console.log(_userEvent)
+          RetailApi._trackEvent(_userEvent)
+        })
+      }
+      
+    },
+
+    _trackEvent: function(userEvent) {
+      var _gre = [];
+      // Credentials for project.
+      _gre.push(['apiKey', 'AIzaSyCuJthcsj4lVENmF6wG5n6qQOkSRtBixLo']);
+      _gre.push(['logEvent', userEvent]);
+      _gre.push(['projectId', 'offer-service-212523']);
+      _gre.push(['locationId', 'global']);
+      _gre.push(['catalogId', 'default_catalog']);
+      window._gre = _gre
+      RetailApi._loadScript();
+    },
+
+    _getVisitorId: function(callback) {
+      if (typeof gtag !== 'undefined') {
+        gtag('get', 
+          '<%= ga4_tracker.analytics_id %>', 
+          'client_id', 
+          callback
+        )
+      } else {
+        setTimeout(function(){
+          RetailApi._getVisitorId(callback)
+        }, 500);
+      }
+    }
+  }
+
+  function initialize() {
+    document.addEventListener('turbolinks:load', pageLoadEventListenner)
+  }
+
+  initialize()
+
+  function pageLoadEventListenner() {
+    var userEvent = getUserEvent()
+    if (userEvent) {
+      
+      RetailApi.track(userEvent)
+    }
+    document.removeEventListener('turbolinks:load', pageLoadEventListenner)
+    <% if controller_name == 'products' && action_name == 'show' %>
+      setTimeout(attachEvents, Math.random() * 100)
+      function addToCartEvent(event) {
+        var productId = "<%= @product.id%>"
+        var variantId = event.variant.id
+        var user_event = {
+          "eventType": "add-to-cart",
+          "productDetails": [{
+            "product": {
+              "id": trackingProductId(productId, variantId)
+            },
+            "quantity": event.quantity_increment || 1
+          }]
+        };
+        RetailApi.track(user_event, true)
+      }
+      
+      function variantIdChange(event) {
+        var productId = "<%= @product.id%>"
+        var variantId = event.variantId;
+        var user_event = productViewUserEvent(productId, variantId)
+        RetailApi.track(user_event, true)
+      }
+
+      function attachEvents() {
+        var addToCartAttached = ($._data($('body').get(0), "events")['product_add_to_cart'] || []).find(function(e) {
+          return e.handler.name == 'addToCartEvent'
+        })
+        var variantIdChangeAttached = ($._data($('body').get(0), "events")['variant_id_change'] || []).find(function(e) {
+          return e.handler.name == 'variantIdChange'
+        })
+        if (!addToCartAttached) {
+          $('body').on('product_add_to_cart', addToCartEvent)
+        }
+        if (!variantIdChangeAttached) {
+          $('body').on('variant_id_change', variantIdChange)
+        }
+      }
+
+    <% end %>
+  }
+
+  
+
+  function productViewUserEvent(productId, variantId) {
+    return {
+      "eventType": "detail-page-view",
+      "productDetails": [{
+        "product": {
+          "id": trackingProductId(productId, variantId)
+        }
+      }]
+    };
+  }
+
+  function getUserEvent() {
+    var user_event;
+    <% if controller_name == 'products' && action_name == 'show' %>
+    var productId = "<%= @product.id%>"
+    user_event = getProductViewedEvent(productId)
+    <% elsif controller_name == 'home' && action_name == 'index'%>
+      user_event = {
+        "eventType": "home-page-view"
+      };
+    <% elsif controller_name == 'orders' && action_name == 'show' && @order.present? %>
+      user_event = {
+        "eventType": "purchase-complete",
+        "productDetails": <%= @order.line_items.map {|l| {product: {id: l.variant.product.id.to_s + '-' + l.variant_id.to_s}, quantity: l.quantity} }.to_json.html_safe %>,
+        "purchaseTransaction": {
+          "revenue": '<%= @order.total %>',
+          "currencyCode": '<%= @order.currency %>'
+        }
+      }
+    <% elsif controller_name == 'taxons' && action_name == 'show' %>
+      var category = '<%= @taxon.path.reverse.map{|p| p['name']}.join(' > ').html_safe %>'
+      user_event = {
+        "eventType": "category-page-view",
+        "pageCategories": [category]
+      };
+    <% elsif controller_name == 'products' && action_name == 'index' %>
+      user_event = getSearchEventData()
+    <% end %>
+    return user_event
+  }
+
+  function getSearchEventData() {
+    let keywords = getSearchKeywords()
+    var eventData;
+    if (keywords) {
+      eventData = {
+        "eventType": "search",
+        "searchQuery": keywords
+      }
+      eventData['productDetails'] = getSearchedProductList()
+    }
+    
+    return eventData
+  }
+
+  function getSearchKeywords() {
+    var params = new URL(document.location).searchParams;
+    return (params.get('keywords') || '').trim()
+  }
+
+  function getSearchedProductList() {
+    return $('.collection .row > div').map(function(i,e) {
+      return {
+        product: {
+          id: $(e).attr('id').split('_').pop()
+        }
+      }
+    }).toArray()
+
+  }
+
+  function getProductViewedEvent(productId) {
+    var variantId = document.querySelector('.add-to-cart-form .cart_form_vendor_variant_id').value
+    return productViewUserEvent(productId, variantId)
+  }
+
+   
+
+  function trackingProductId(productId, variantId) {
+    return productId + '-' + variantId;
+  }
+
+})()
+  
+</script>
