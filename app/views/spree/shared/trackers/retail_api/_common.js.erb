@@ -26,7 +26,10 @@ var retailApiEventTracked = false;
             visitorId,
             ...userEvent
           }
-          console.log(_userEvent)
+          var atk = new URLSearchParams(window.location.search).get('atk');
+          if (atk) {
+            _userEvent['attributionToken'] = atk
+          }
           RetailApi._trackEvent(_userEvent)
         })
       }
